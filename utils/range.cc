@@ -110,7 +110,7 @@ namespace utils{//{{{
         inline typename _range<Z>::range1 range(const Z &b, const Z &e){
             return typename _range<Z>::range1(b, e); }
     template<class Z>
-        inline typename _range<Z>::range1 range(const Z &n){ return range(0, n); }
+        inline typename _range<Z>::range1 range(const Z &n){ return range((Z)0, n); }
     template<class Z>
         inline typename _range<Z>::ranges range(const Z &b, Z e, const Z &s){
             int t = (b - e) % s;
