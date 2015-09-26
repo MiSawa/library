@@ -1,4 +1,4 @@
-# library
+# みさわの暴力ライブラリ
 
 - `graph/`
   - `cowgame.cc`
