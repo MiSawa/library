@@ -8,16 +8,18 @@
 
 - `utils/`
   - `allocator.cc`
-    継承すると new/delete が勝手にプールから取るように変わるやつ.
+    継承で new/delete が勝手にプールから取るように変わるやつ.
   - `easy_io.cc`
-    cin, cout の wrapper.
+    cin, cout の wrapper. いろいろやばいやつ.
+  - `extend_stack.cc`
+    スタック拡張用のマクロ.
+  - `make_vector.cc`
+    vector を作るやつ.
   - `range.cc`
     python ぽい range.
   - `reverse.cc`
-    rbegin(), rend() を保持するようなやつ.
+    rbegin(), rend() を begin(), end() として保持するようなやつ.
   - `unroll.cc`
-    自動ループ展開
-
-
+    るーぷあんろーりんぐ.
 
 
