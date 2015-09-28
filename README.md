@@ -15,6 +15,8 @@
     スタック拡張用のマクロ.
   - `make_vector.cc`
     vector を作るやつ.
+  - `mod_comb.cc`
+    C(n, k) とかそういうのを mod で計算するやつ.
   - `mod_int.cc`
     mod 取りながら計算するやつ. mod はコンパイル時に決まってないとだめ.
   - `range.cc`
