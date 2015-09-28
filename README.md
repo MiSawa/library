@@ -15,6 +15,8 @@
     スタック拡張用のマクロ.
   - `make_vector.cc`
     vector を作るやつ.
+  - `mod_int.cc`
+    mod 取りながら計算するやつ. mod はコンパイル時に決まってないとだめ.
   - `range.cc`
     python ぽい range.
   - `reverse.cc`
