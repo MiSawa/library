@@ -9,7 +9,7 @@
 - `utils/`
   - `allocator.cc`
     継承で new/delete が勝手にプールから取るように変わるやつ.
-  - `easy_io.cc`
+  - `awesome_io.cc`
     cin, cout の wrapper. いろいろやばいやつ.
   - `extend_stack.cc`
     スタック拡張用のマクロ.

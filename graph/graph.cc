@@ -54,15 +54,16 @@ template<class Edge_> struct Graph : public virtual Edge_::EdgeInfo{//{{{
 
     int n;
     vector<Edge> edges;
-    inline void init(const int n){ this->n = n; }
+    void init(const int n){ this->n = n; }
 
-    template<class ...Args> inline void add_edge(Args &&...args){//{{{
+    template<class ...Args> void add_edge(Args &&...args){//{{{
         edges.emplace_back(forward<Args>(args)...);
     }//}}}
 
-    inline int size() const { return n; }
+    int size() { build_edges(); return n; }
+    int size() const { return n; }
 
-    inline vector<Edge> &build_edges(){//{{{
+    vector<Edge> &build_edges(){//{{{
         if(n < 0){
             n = 0;
             for(auto &e : edges) n = max(n, max(e.s, e.t) + 1);
@@ -71,20 +72,20 @@ template<class Edge_> struct Graph : public virtual Edge_::EdgeInfo{//{{{
     }//}}}
 
     vector<vector<Edge>> adj_list;
-    inline vector<vector<Edge>> &build_adj_list(){//{{{
+    vector<vector<Edge>> &build_adj_list(){//{{{
         if(!adj_list.empty()) return adj_list;
         const auto &es = build_edges();
         adj_list.resize(this->size());
         for(auto &e : es) adj_list[e.s].emplace_back(e);
         return adj_list;
     }//}}}
-    inline vector<Edge> &operator[](const int u){//{{{
+    vector<Edge> &operator[](const int u){//{{{
         build_adj_list();
         return adj_list[u];
     }//}}}
 
     template<class E = Edge, class Weight = typename E::Weight>
-    inline vector<vector<Weight>> build_adj_matrix(const Weight inf = Edge::INF){//{{{
+    vector<vector<Weight>> build_adj_matrix(const Weight inf = Edge::INF){//{{{
         const auto &es = build_edges();
         const int n = this->size();
         vector<vector<Weight>> g(n, vector<Weight>(n, inf));
@@ -93,7 +94,7 @@ template<class Edge_> struct Graph : public virtual Edge_::EdgeInfo{//{{{
         return g;
     }//}}}
     template<class E = Edge, class Weight = int, typename enable_if<!has_weight<E>::value, int>::type = 0>
-    inline vector<vector<Weight>> build_adj_matrix(const Weight inf = numeric_limits<Weight>::max()/4){//{{{
+    vector<vector<Weight>> build_adj_matrix(const Weight inf = numeric_limits<Weight>::max()/4){//{{{
         const auto &es = build_edges();
         const int n = this->size();
         vector<vector<Weight>> g(n, vector<Weight>(n, inf));
@@ -107,7 +108,7 @@ template<class Graph> struct Dijkstra : public virtual Graph{//{{{
     typedef typename Graph::Edge Edge;
     typedef typename Edge::Weight Weight;
 
-    inline vector<Weight> dijkstra(const int s, const Weight inf = Edge::INF){//{{{
+    vector<Weight> dijkstra(const int s, const Weight inf = Edge::INF){//{{{
         const auto &g = this->build_adj_list();
         const int n = g.size();
         vector<Weight> d(n, inf);
@@ -299,7 +300,7 @@ template<class G, template<class> class... As> struct GraphAlgorithms : public v
     template<class ...Ts>GraphAlgorithms(Ts &&...t){ this->init(forward<Ts>(t)...); }
 };//}}}
 
-class IO{//{{{
+class AwesomeIO{//{{{
     std::istream &is;
     std::ostream &os;
     typedef std::ostream& (&OManip)(std::ostream &);
@@ -308,11 +309,13 @@ class IO{//{{{
         T val;
         explicit Refwrap(T &&val) : val(std::forward<T>(val)) {}
         const T &operator*() const { return val; }
+        T &operator*() { return val; }
     };//}}}
     template<class T> struct Refwrap<T&>{//{{{
         T &val;
         explicit Refwrap(T &val) : val(val) {}
         const T &operator*() const { return val; }
+        T &operator*() { return val; }
     };//}}}
 
     class NonAssignable{//{{{
@@ -323,46 +326,74 @@ class IO{//{{{
             NonAssignable &operator=(const NonAssignable &);
     };//}}}
 
+    template<class TPL, size_t n = std::tuple_size<typename std::remove_reference<TPL>::type>::value, size_t i = 0> struct rec_tuple{//{{{
+        template<class Tpl>
+        static AwesomeIO &read(AwesomeIO &io, Tpl &&tpl){
+            io >> std::get<i>(std::forward<Tpl>(tpl));
+            return rec_tuple<TPL, n, i+1>::read(io, tpl);
+        }
+        template<class T, class ...Args>
+        static T construct(AwesomeIO &io, Args &&...args){
+            typename std::tuple_element<i, TPL>::type x{};
+            io >> x;
+            return rec_tuple<TPL, n, i+1>::template construct<T>(
+                    io, std::forward<Args>(args)..., std::move(x));
+        }
+    };//}}}
+    template<class TPL, size_t n> struct rec_tuple<TPL, n, n>{//{{{
+        template<class Tpl>
+        static AwesomeIO &read(AwesomeIO &io, Tpl &&){ return io; }
+        template<class T, class ...Args>
+        static T construct(AwesomeIO &, Args &&...args){
+            return T(std::forward<Args>(args)...);
+        }
+    };//}}}
+
     public:
-    IO(std::istream &is, std::ostream &os) : is(is), os(os) {}
+    AwesomeIO(std::istream &is, std::ostream &os) : is(is), os(os) {}
     explicit operator bool() const { return static_cast<bool>(is); }
     explicit operator bool() { return static_cast<bool>(is); }
     const bool operator!() const { return !is; }
     const bool operator!() { return !is; }
 
-    inline std::string line(){ std::string s; getline(is, s); return s; }
+    std::string line(){ std::string s; getline(is, s); return s; }
     template<class T>
-    inline operator T(){ T x; *this >> x; return std::move(x); }
-    template<class T> inline IO &operator>>(T &x){ is >> x; return *this; }
-    template<class T = OManip> inline IO &operator<<(const T &x) { os << x; return *this; }
+    operator T(){ T x{}; *this >> x; return std::move(x); }
+    template<class T> auto operator>>(T &x) -> decltype(is >> x, *this){ is >> x; return *this; }
+    template<class Tpl> auto operator>>(Tpl &&tpl) -> decltype(std::tuple_size<typename std::remove_reference<Tpl>::type>::value, *this){//{{{
+        return rec_tuple<Tpl>::read(*this, std::forward<Tpl>(tpl));
+    }//}}}
+
+    template<class T = OManip> AwesomeIO &operator<<(const T &x) { os << x; return *this; }
 
     template<class Int>
-    inline typename std::enable_if<std::is_integral<Int>::value, Int>::type
+    typename std::enable_if<std::is_integral<Int>::value, Int>::type
     operator+(const Int x){ return Int(*this)+x; }
     template<class Int>
-    inline typename std::enable_if<std::is_integral<Int>::value, Int>::type
+    typename std::enable_if<std::is_integral<Int>::value, Int>::type
     operator-(const Int x){ return Int(*this)-x; }
 
-    inline int operator++(){ return *this + 1; }
-    inline int operator--(){ return *this - 1; }
+    int operator++(){ return *this + 1; }
+    int operator--(){ return *this - 1; }
 
-    struct ItIn {//{{{
+    template<class IO> struct ItIn {//{{{
         template<class T> struct it_t : public std::iterator<std::input_iterator_tag, T>{//{{{
-            IO &io;
+            Refwrap<IO> &io;
             size_t rest;
             bool has_val;
             T val;
-            inline it_t(IO &io, size_t rest) : io(io), rest(rest), has_val(false){}
-            inline bool operator!=(const it_t &o) const { return rest != o.rest; }
-            inline const T &operator*(){
-                if(!has_val){ has_val = true; io >> val; }
+            it_t(Refwrap<IO> &io, size_t rest) : io(io), rest(rest), has_val(false){}
+            bool operator!=(const it_t &o) const { return rest != o.rest; }
+            const T &operator*(){
+                if(!has_val){ has_val = true; (*io) >> val; }
                 return val;
             }
-            inline it_t &operator++(){ --rest; has_val = false; return *this; }
+            it_t &operator++(){ --rest; has_val = false; return *this; }
         };//}}}
         const size_t n;
-        IO &io;
-        ItIn(const size_t n, IO &io) : n(n), io(io){}
+        Refwrap<IO> io;
+        template<class IOt>
+        ItIn(const size_t n, IOt &&io) : n(n), io(std::forward<IOt>(io)){}
 
         template<class C, class T, class ...>
         C construct(){ return C(it_t<T>(io, n), it_t<T>(io, 0)); }
@@ -372,20 +403,41 @@ class IO{//{{{
         template<template<class, size_t> class C, class T, size_t N>
         operator C<T, N>(){ return construct<C<T, N>, T>(); }
     };//}}}
-    inline ItIn operator()(const size_t n){ return ItIn(n, *this); }
+    ItIn<AwesomeIO&> operator()(const size_t n){ return ItIn<AwesomeIO&>(n, *this); }
+
+    template<class ...Args>
+    struct Builder {//{{{
+        AwesomeIO &io;
+        Builder(AwesomeIO &io) : io(io){}
+        template<class T, typename std::enable_if<std::is_constructible<T, Args...>::value, std::nullptr_t>::type = nullptr>
+        Builder &operator>>(T &x){
+            x = rec_tuple<std::tuple<Args...>>::template construct<T>(io);
+            return *this;
+        }
+
+        template<class T, typename std::enable_if<std::is_constructible<T, Args...>::value, std::nullptr_t>::type = nullptr>
+        operator T(){
+            return rec_tuple<std::tuple<Args...>>::template construct<T>(io);
+        }
+    };//}}}
+
+    template<class ...Args>
+    Builder<Args...> build(){ return Builder<Args...>(*this); }
+    template<class ...Args>
+    ItIn<Builder<Args...>> build(const size_t n){ return ItIn<Builder<Args...>>(n, Builder<Args...>(*this)); }
 
     template<class C, class D> class Join : private NonAssignable {//{{{
         const Refwrap<C> c; const Refwrap<D> d;
         Join(C &&c, D &&d) : c(std::forward<C>(c)), d(std::forward<D>(d)) {}
         Join(const Join &) = default;
-        friend class IO;
+        friend class AwesomeIO;
     };//}}}
     template<class C = OManip, class D = OManip>
-    static inline Join<C, D> join(C &&c, D &&d){//{{{
+    static Join<C, D> join(C &&c, D &&d){//{{{
         return Join<C, D>(std::forward<C>(c), std::forward<D>(d));
     }//}}}
     template<class C, class D>
-    inline IO &operator<<(Join<C, D> &&j){//{{{
+    AwesomeIO &operator<<(Join<C, D> &&j){//{{{
         bool first = true;
         for(auto it = std::begin(*j.c), e = std::end(*j.c); it != e; ++it){
             if(first) first = false;
@@ -400,14 +452,14 @@ class IO{//{{{
         const Refwrap<A> a; const Refwrap<B> b;
         Cond(const bool cond, A &&a, B &&b) : cond(cond), a(std::forward<A>(a)), b(std::forward<B>(b)){}
         Cond(const Cond &) = default;
-        friend class IO;
+        friend class AwesomeIO;
     };//}}}
     template<class Bool, class A = OManip, class B = OManip>
-    static inline Cond<A, B> cond(Bool &&c, A &&a, B &&b){//{{{
+    static Cond<A, B> cond(Bool &&c, A &&a, B &&b){//{{{
         return Cond<A, B>(static_cast<bool>(std::forward<Bool>(c)), std::forward<A>(a), std::forward<B>(b));
     }//}}}
     template<class A, class B>
-    inline IO &operator<<(const Cond<A, B> &c){//{{{
+    AwesomeIO &operator<<(const Cond<A, B> &c){//{{{
         if(c.cond) return (*this) << *c.a;
         else       return (*this) << *c.b;
     }//}}}

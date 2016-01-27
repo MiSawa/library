@@ -17,7 +17,7 @@ template<class C>int size(const C &c){ return c.size(); }
 template<class T>bool chmin(T&a,const T&b){if(a<=b)return false;a=b;return true;}
 template<class T>bool chmax(T&a,const T&b){if(a>=b)return false;a=b;return true;}
 
-// verified: AOJ GRL_4_A(Cycle Detection), GRL_4_B (Topological Sort)
+// verified: AOJ GRL_4_A (Cycle Detection), GRL_4_B (Topological Sort)
 // TopologicalSort ts(n);
 // ts.add_edge(u, v);
 // bool ts.run(); true if this graph is DAG.
