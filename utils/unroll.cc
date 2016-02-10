@@ -25,7 +25,7 @@ template<size_t B, typename F> inline void unroll(const size_t n, const F &f){
 signed main(void){
     volatile int s = 0;
     for(size_t i = 0; i < 99; ++i) s += i;
-    unroll<8>(99, [&](const size_t &i){ s += i; });
+    unroll<8>(99, [&](const size_t i){ s += i; });
     cout << s << endl;
     return 0;
 }
