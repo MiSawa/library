@@ -1,0 +1,640 @@
+\section{The Auction algorithm}
+\label{auction}
+
+\subsection{Description of the Auction algorithm}
+\label{auction_desc}
+We refer the reader to \cite{be91} for an excellent tutorial.
+We provide a brief description of the algorithm.
+We start with a weight matrix $w$ where $w(i, j)$ is the cost
+of assigning person $i$ to object $j$. Initially, all persons
+are unassigned. Each object, $j$, has a price, $price(j)$, initially 0.
+The Auction algorithm proceeds in ``rounds'' or ``bids''.
+In a bid, an unassigned person bids for the object, $j_i$ with maximal
+value $m_i$ where $m_i = max_j \{w(i, j) - price(j) \}$.
+It also computes the second best object value,
+$nm_i = max_{j, j \neq j_i} \{ w(i, j) - price(j) \} $.
+It then raises the price of $j_i$ by $m_i - {nm}_i + \epsilon$,
+unassigns any person assigned to that object and
+assigns itself to that object.  This process is repeated 
+until all objects have received at least one bid.
+If $\epsilon < \frac{1}{n}$ and $w(i, j)$ are integers, then the
+assignment obtained upon termination  is optimal.
+We use $\epsilon$-scaling in our implementations,
+which reduces the number of bids.
+$\epsilon$-scaling consists of repeating the algorithm several
+times, starting with a large value of $\epsilon$ and progressively
+decreasing it until it is less than $\frac{1}{n}$ for integer costs.
+Also, for a given $\epsilon$, rather than wait for all objects
+to be matched before we reduce $\epsilon$, we set a threshold.
+Once the number of unmatched objects falls below this threshold,
+we move to the next $\epsilon$ value. The threshold
+is gradually reduced until it becomes 1 when $\epsilon$ is 1.
+%%% Describe $\epsilon$-scaling a little more.
+
+\paragraph{Combined Forward-Reverse Auction.}
+\cite{bct91} proposed a variation on the Auction algorithm
+called Reverse Auction, where, roughly, {\em objects} compete for persons
+by lowering their price to a level that is sufficiently low to lure a person
+away from his currently held object. They showed that a judicious
+combination of Forward and Reverse Auction solved problems faster
+than either one alone could.
+
+We decided against this variation despite its claimed superior
+performance \cite{ca91} for a simple reason: memory accesses.
+The weight matrix is stored as columns (FORTRAN) or as rows (C or Pascal).
+The Forward-Reverse Auction accesses the matrix row-wise as well
+as column-wise.  Given that most memory systems favour block transfers,
+it seemed unwise to access columns of a matrix that had been stored
+row-wise, especially if the matrix is so large that it needs to be paged
+in from disk.
+
+\paragraph{Gauss-Seidel vs. Jacobi.}
+The variation of the Auction algorithm when
+only one person bids at a time, is called the {\em Gauss-Seidel}
+implementation. If all unassigned persons bid at the same time,
+we get the {\em Jacobi} implementation. Both yield correct results.
+The Jacobi implementation is more parallel but requires
+more bids for termination.
+The decision to use the Gauss-Seidel variation of the Auction
+algorithm rather than the Jacobi variation was based on the following.
+(i) A reasonably high proportion of the total number of bids required 
+by the Auction algorithm is spent with very few unmatched objects as
+shown in Table~\ref{many_bids_for_few} and as discussed in 
+\cite{weze91,beca89}, and 
+(ii) the Jacobi variation requires more bids than the Gauss-Seidel
+\cite{weze91,beca89}. Further, we suspect that as the problem size
+grows, the fraction of bids with very few unmatched persons increases.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline \hline
+{\em Problem size }        & {\em Fraction of bids } & {\em Number unassigned} \\ \hline
+2048	&	34.1\%	& $\leq 32$ 	\\ \hline
+2048	&	25.4\%	& $\leq 16$ 	\\ \hline
+2048	&	16.3\%	& $\leq  8$ 	\\ \hline
+2048	&	11.7\%	& $\leq  4$ 	\\ \hline
+2048	&	7.7\%	& $\leq  2$ 	\\ \hline
+2048	&	4.9\%	& $\leq  1$ 	\\ \hline \hline
+4096	&	31.6\%	& $\leq 32$ 	\\ \hline
+4096	&	23.4\%	& $\leq 16$ 	\\ \hline
+4096	&	16.5\%	& $\leq  8$ 	\\ \hline
+4096	&	12.4\%	& $\leq  4$ 	\\ \hline
+4096	&	9.6\%	& $\leq  2$ 	\\ \hline
+4096	&	6.7\%	& $\leq  1$ 	\\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{Fraction of bids with a given number of unassigned persons}
+\label{many_bids_for_few}
+\end{table}
+
+\subsection{Characteristics of the Auction algorithm}
+\label{auction_charac}
+
+\begin{enumerate}
+\item Processor-to-memory bandwidth.
+The weight matrix grows as $O(n^2)$.  Therefore, memory requirements
+and processor-to-memory bandwidth are of concern.
+
+\item The heart of the problem.
+The essential computational problem is finding the maximum of $n$ numbers. 
+
+\item Locality of reference. The Auction algorithm does not
+exhibit any regularity of access patterns across bids. In
+other words, while the number of unmatched persons decreases
+rapidly, the identity of the persons in the small set of 
+unmatched persons fluctuates rapidly and without any regularity.
+
+\item Regularity of access patterns within a bid.
+The data necessary to calculate a bid are in contiguous memory locations.
+
+\item Computation to communication ratio. The amount of
+computation done per datum read is extremely small, consisting
+of a few integer arithmetic operations and comparisons.
+
+\end{enumerate}
+
+We analyze these considerations in the context of 
+a variety of architectures. We present our strategy, rationale
+for that strategy, performance results, lessons learnt, and
+what architectural features are important.
+
+
+\subsection{SIMD Implementation}
+\label{simd}
+
+The Auction algorithm was implemented on an 8K MasPar MP-1208 and
+a 16K Wavetracer DTC-04032.
+The processor-to-local-memory bandwidth\footnote{
+The processor-to-local-memory bandwidth is the product of the rate at
+which a processor can access its local memory and the number of processors.
+} is $2.2$ Mbytes/sec on the Wavetracer and $1.64$ Mbytes/sec on
+the MasPar.
+This figure is arrived at as $\frac{p \times 4 }{t_{read}}$, where
+$t_{read} = $ the time to read a 4-Byte integer from memory, $p =$
+number of processors. 
+This bandwidth is sustainable until the problem becomes too 
+large to fit into the memory of the processors, which is 
+16K processors $\times$ 32 Kbytes = $\frac{1}{2}$ Gbytes for the Wavetracer 
+and 8K processors $\times$ 16 Kbytes = 128 Mbytes for the MasPar.
+Note that these machines do not perform block transfers.
+This did not affect our results because blocks transfers can help
+only when $n$ exceeded $p$ and memory limitations kept
+us from such large problems.
+While the processors have registers, they have no
+automatic cache mechanism. This is not a drawback for the Auction
+algorithm which displays no locality of reference across bids.
+The SIMD machine was configured as a 1-D array. The $j$th processor was 
+assigned the $j$th column of the weight matrix, $w[1..n][j]$,
+$price[j]$, $s[j]$ and $t[i]$ where $s[j]$ is the $s$-vertex to which
+$j$ is matched and $t[i]$ is the $t$-vertex to which $i$ is matched.
+The built-in function to compute the maximum was used. A small part
+of each bid - determining which object had to be assigned  to which
+person, unassigning objects and updating the price - was 
+performed on the front end.
+
+A large part of the problem consists of performing a global maximum, 
+for which a built-in function is provided.
+
+\paragraph{Results and Discussion}
+Our results are shown in Table~\ref{auction_simd_results}.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|r|r|r|r|r|r|} \hline \hline
+- & - & 
+\multicolumn{2}{c|}{\em MasPar (time in sec)} &
+\multicolumn{2}{c|}{\em WaveTracer (time in sec)} \\ \hline
+{\em Size} & {\em Cost} & {\em Unscaled} & {\em Scaled} & {\em Unscaled} & {\em Scaled} \\ \hline  
+$128  \times  128$ & 100000     &  0.95 &  1.24 &   25.1 & 24.27  \\ \hline
+$256  \times  256$ & 100000     &  2.85 &  2.50 &   74.7 & 55.29  \\ \hline
+$512  \times  512$ & 100000     &  7.65 &  4.62 &    198 & 117.99 \\ \hline
+$1024 \times 1024$ & 100000     &  19.6 &  9.94 &    565 & 277.11 \\ \hline
+$2048 \times 2048$ & 100000     &  48.3 &  20.43&   1342 & 603.64 \\ \hline
+$3072 \times 3072$ & 100000     &  71.8 &  32.53&   2043 & 980.81 \\ \hline
+$3800 \times 3800$ & 100000     &  82.1 &  40.69&   2373 &1237.43 \\ \hline \hline
+
+$128  \times  128$ & 10000000   &   0.83 & 1.30 &   23.5 & 27.33  \\ \hline
+$256  \times  256$ & 10000000   &   2.34 & 2.51 &   61.4 & 57.84  \\ \hline
+$512  \times  512$ & 10000000   &   6.98 & 5.04 &    189 & 131.67  \\ \hline
+$1024 \times 1024$ & 10000000   &   20.1 & 10.28&    575 & 290.32 \\ \hline
+$2048 \times 2048$ & 10000000   &   75.5 & 21.76&   2050 & 646.96 \\ \hline
+$3072 \times 3072$ & 10000000   &    752 & 34.29&  13027 & 1040.07\\ \hline
+$3800 \times 3800$ & 10000000   &    531 & 47.70&   9074 & 1463.69\\ \hline \hline
+
+$128  \times  128$ & $i \times j$ &   118.81&    2.47 & 3711.59 &  53.3 \\ \hline
+$256  \times  256$ & $i \times j$ &   906.12&    9.57 & 29898.51 &   275 \\ \hline
+$512  \times  512$ & $i \times j$ & 10151.93&    30.9 & 241913.29 &   931 \\ \hline
+$1024 \times 1024$ & $i \times j$ & --      &     131 & - &  4008 \\ \hline
+$2048 \times 2048$ & $i \times j$ & --      &     313 & - &  9707 \\ \hline
+$3072 \times 3072$ & $i \times j$ & --      &     689 & - & 21629 \\ \hline
+$3800 \times 3800$ & $i \times j$ & --      &    1463 & - & 44831 \\ \hline \hline
+
+$128  \times  128$ & $i \times j \times 100$ & 115.91  &   2.46 & 3771.35 & 59.3 \\ \hline
+$256  \times  256$ & $i \times j \times 100$ & 919.56   &   9.58 & 30450.25 & 286 \\ \hline
+$512  \times  512$ & $i \times j \times 100$ & -- &  29.5 & - & 910 \\ \hline
+$1024 \times 1024$ & $i \times j \times 100$ & --   & 129 & - & 4041 \\ \hline
+$2048 \times 2048$ & $i \times j \times 100$ & --   & 279 & - & 8938 \\ \hline
+$3072 \times 3072$ & $i \times j \times 100$ & --   & 588 & - & 18907 \\ \hline
+$3800 \times 3800$ & $i \times j \times 100$ & --   & 797 & - & 25867 \\ \hline \hline
+\end{tabular}
+\end{center}
+
+\caption{Results on SIMD Machines}
+\label{auction_simd_results}
+\end{table}
+
+We learned the following lessons:
+\begin{enumerate}
+
+\item The frustration of bit-serial computers. 
+The often touted advantage of bit-serial computers does
+not translate into any advantage in practice.
+In commercially available bit-serial machines,
+the cycle-count for operations is a very poor 
+indicator of actual computation time.  We had recognized and solved 
+this problem several years ago in our prototype, the AP2S \cite{rjn90}
+with a Distributed Macro Controller.  However, such a controller 
+remains unavailable in commercial machines.  
+%
+For example, consider a 4-byte addition, $a \leftarrow b + c$,
+performed $n$ times in a loop or simply replicated $n$ times.
+One would not expect a difference in the time taken by these
+two dummy programs. On the contrary, there is a significant
+difference.  This slowness is due to the controller bottle-neck.  
+To understand this, let us explain how, for example, the Wavetracer works.
+
+On the Wavetracer, a program compiled by 
+multiC runs on the host which sends appropriate commands to the 
+16 MHz command controller via a SCSI bus.  
+The controller generates array processor microcode instructions 
+and sends it to the sequencer.  Then the sequencer executes these 
+instructions on the array processors.  
+Once the instructions are executed, the sequencer waits for
+the controller to generate the next set of microcodes. 
+The controller waits for the host to generate the next command.
+The time taken for these operations is substantial.
+The array processor is poorly utilized unless it is executing a long
+operation (eg., floating-point multiplcation) such that the 
+computation time subsumes the time for the decoding and
+broadcast process.
+Table~\ref{wave_perform} shows the disparity
+between the loop time and the sequential time. The disparity
+decreases as the operations become more complex.  MasPar has
+a similar problem as Table~\ref{simd_myth_bit_serial} indicates.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline \hline
+{\em Operation }	 	& {\em Loop Time } & {\em Repeated Time} \\ \hline
+Off-chip Memory to On-chip Memory	&	1.38	& 4.96	\\ \hline
+Off-chip Memory to Off-chip Memory	&	0.54	& 1.45	\\ \hline
+On-chip Memory to On-chip Memory	&	2.25	& 8.28	\\ \hline
+32-bit addition				&	6.33	& 12.45	\\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{Time to perform specified operation on the Wavetracer (in $\mu$sec)}
+\label{wave_perform}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|} \hline \hline
+{\em Operation } 	& {\em Loop Time } & {\em Repeated Time} \\ \hline
+Memory-to-register	&	6.42	& 20000	\\ \hline
+Memory-to-memory	&	12.12	& 40000	\\ \hline
+Register-to-register	&	3.61	& 10000	\\ \hline
+32-bit addition		&	20.0	& 240	\\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{Time to perform specified operation on the MasPar (in $\mu$sec)}
+\label{simd_myth_bit_serial}
+\end{table}
+
+Another slowdown arises as follows.
+The flow of information from the host to the array processors
+is pipelined. Whenever this pipe is broken, a delay is incurred.
+Consider the code segments in Figure~\ref{pipeline}
+to find the most desired object
+i.e., the processor with the highest $v$ value. 
+Variables $maxi$ and $j$ are resident on the host while
+$v$, $w$, $processor\_id$ and $p$ are resident on the array processors.
+The code on the left is about 1.25 times slower than the code
+to the right. 
+This is because in assigning the maximum to $maxi$, a variable
+resident on the host, we are forcing the host to wait for the value
+of $maxi$ and hence are breaking the instruction pipeline.
+
+\begin{figure}[hbt]
+\begin{center}
+{\bf code for finding $j$: object with maximum $v = w[i] - p$}
+\end{center}
+\begin{tabbing}
+\hspace*{.25in} \= \hspace*{3.50in} \= \kill
+$ v \leftarrow w[i] - p$               \> \> $ v \leftarrow w[i] - p$  \\
+%
+$maxi = >?= v$  \{ $= >?=$ is the max-finding operator \}  \\
+%
+{\bf if} $maxi == v$ {\bf then} \> \> {\bf if} $v == (>?= v)$ {\bf then} \\
+%
+\> $j = <?= processor\_id$  \> $j = <?= processor\_id$  \\
+%
+{\bf endif}  				\> \> {\bf endif} \\
+\end{tabbing}
+\caption{Effect of breaking pipeline in SIMD machines}
+\label{pipeline}
+\end{figure}
+
+\item The ability to compute an associative function.
+The time take to  perform a 4-Byte global maximum on the MasPar is 0.51
+msec and 0.34 msec from memory and register (benchmark using
+MPL compiler) respectively and  Wavetracer is 2.9 msec (multiC
+compiler), instead of 326 cycles or 32.6 $\mu$sec on the AP2S which
+utilized the Global-OR feature of the GAPP.  Global-OR of a 4-Byte word
+on the MasPar
+takes 0.1 msec and 0.07 msec from memory and register
+respectively, and 2.9 msec on Wavetracer.  The global maximum operation
+finds the maximum price and the next maximum price per person,
+and Global-OR is used to locate the found maximum price.
+ 
+The average time per bid for $n = 2048$ was 2.5 msec 
+on the SPARCstation-2, 1.241 msec on the MasPar and 9 msec
+on the Wavetracer.   The times for the MasPar and
+Wavetracer would remain constant until $n > p$, after which virtualization
+would introduce an overhead.
+For $n = 2048$, we achieved a speedup of 2 on the 
+MasPar slow down of 6 on the Wavetracer, compared to the SPARCstation 2.
+
+\item The imbalance between communication and computation.
+While the work of \cite{weze91} is noteworthy, we feel that the 
+Auction algorithm is mismatched on an SIMD architecture. 
+It is interesting to note \cite{weze91}'s conclusion that
+``we have yet, however, to produce CM techniques for this problem
+that are significantly better than smaller scale MIMD 
+(Multiple-Instruction Multiple-Data) machines.''
+For example, the MasPar can perform 400 million integer additions
+per second. However, it can read only about 0.4 million integers
+per second from memory. 
+
+The Auction algorithm makes a strong case for an MIMD machine like
+the CM-5 or Intel Delta, {\em provided that they provide low latency
+communications}. One of the guiding principles in the design
+philosophy of the CM-5 was to leverage the technology advancements
+in the ``killer-micros''. The Auction algorithm uses relatively
+simple instructions and has the structure
+necessary which makes it amenable to techniques like 
+pipelining, block transfers and hence,
+an ideal candidate for powerful RISC-based processors.
+The performance of Auction on a single processor degrades
+only when we have to go out to disk repeatedly. The processor-to-local-memory
+bandwidth shortfall could be redressed by having many processors,
+each with their own communication route to memory. Since the 
+weight matrix, which is responsible for the bandwidth shortfall,
+is immutable, this suggests that there is a rationale for
+designing of read-only memory which
+permits simultaneous reads and does not serialize concurrent
+accesses as a typical memory interface does.
+
+\item For memory intensive problems such as 
+Auction, the time to load the data often substantial
+(Table~\ref{simd_read_data}).
+
+\begin{table}[hbt]
+\begin{center}
+\begin{tabular}{|c|c|} \hline \hline
+{\em Problem size} & {\em Time to transfer (in sec) } \\ \hline
+$512 \times 512$ & .072 \\ \hline
+$1024 \times 1024$ & 17 \\ \hline
+$2048 \times 2048$ & 80 \\ \hline
+$3072 \times 3072$ & 148 \\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{Time to transfer data from a binaty file on the DEC workstation- host into the memory of MasPar array processors.}
+\label{simd_read_data}
+\end{table}
+\end{enumerate}
+
+\subsection{Shared Memory Implementation}
+\label{shmem}
+
+We implemented the algorithm on a 4-processor workstation- from
+Silicon Graphics, the IRIS 4D/340 DVX,
+chosen because it was representative of 
+shared memory systems (and because it was the only
+machine on which we could hog vast amounts of CPU and memory without
+risking the ire of other users!).
+It has four 33 MHz R3000 RISC based processors from MIPS with 48 Mbytes of
+ECC memory and 2 Gbytes of disk. It has a primary cache of 64 Kbytes
+which is connected to the processor via a Processor Bus, which can transfer
+data at 8 bytes every clock cycle. 
+An MPLink bus connects processors to memory. 
+A second level data cache, 256 Kbytes
+in size, serves as a buffer between the first level cache and the MPlink bus.
+It provides block transfer capability for the MPlink Bus. 
+The MPlink bus has 32 address lines and 64 data lines.
+An MPlink Bus transaction is six cycles in length, although the last
+two data transfer cycles can overlap with the first two cycles of the
+next transaction, resulting in a sustainable data transfer rate 
+of 64 Mbytes/sec. This is substantially higher than the 
+2-4 Mbytes/sec on the SIMD machines. However, it drops to 2 Mbytes/sec
+when we have to go to disk through the SCSI.
+% (This figure is arrived at as follows. 64 bits per transaction = 8 bytes
+% per transaction = 2 bytes per cycle = 64 bytes per $\mu$sec (at 32 MHz)
+% = 64 Mbytes/sec) 
+
+In order to reduce the memory traffic, the  
+columns of the weight matrix were partitioned among the processors.
+A single processor was designated as the master processor.
+It was responsible for deciding which person would bid
+and also for coalescing the partial results of the 
+other processors. Since this required a simple read from
+shared memory, the latency for the flow of information
+was negligible. Had there been more processors, the 
+work of coalescing bids would have been distributed among the processors.
+
+We had essentially a producer-consumer relationship
+between the master processor and the rest of the processors.
+We chose not to incur the overhead of using system calls for
+the synchronization. Instead we used the following tagged scheme
+and busy-waiting (justified by the fact that we were running in
+single user mode and that the workload was evenly balanced, thereby
+making the waiting time minimal).
+
+Assume that the master decides that the bid for person $i$ 
+must be calculated.  Let this be the $b$th bid. It writes $i$ into
+$which\_person$ and $b$ into $tag\_which\_person$, both of which
+are shared locations. A slave processor knows which bid is
+to be calculated. It first reads $tag\_which\_person$. If this
+value is less than $b$, it abandons the data as premature. Note that
+it could not be greater than $b$. If it is equal to $b$, it 
+starts calculating its portion of the bid for $i$. When it is done,
+it writes its partial results to a shared region and then writes
+the tag of $b$. The protocol of reading in the opposite order of
+writing to obtain consistent values was first suggested by 
+Lamport \cite{la77}.
+The ability to predict the tags of the values makes this a
+``knowledgeable'' algorithm, as defined in \cite{su192}.
+Lack of space prevents a formal proof that this protocol is correct.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\paragraph{Results and Discussion.}
+The machine was used essentially as a distributed
+memory machine with no dynamic reallocation of work. The shared memory 
+was used to provide a low-latency inter-processor communication
+mechanism.
+While a single slow processor could degrade the entire performance,
+this was not observed because of even load balancing.
+Contrary to what was expected, the MPlink bus was not a bottleneck. 
+The bottleneck was the SCSI which connects main memory to disk,
+which came into play when the problem size
+was too large for the weight matrix to fit in main memory.
+
+Figure~\ref{fluctuate} shows how the average time per bid
+fluctuates when $n = 4096$ and the weight matrix could not
+fit in main memory. Note how the change in $\epsilon$ causes an
+increase in the average time per bid. This is because when 
+$\epsilon$ changes, all objects become unmatched.
+The average time per bid was $0.63$ msec for $n = 2048$
+and $0.31$ msec for $n = 1024$. For $n \leq 2048$, the problem was
+resident in main memory and the time per bid was very uniform.
+Table~\ref{fig_shmem_results} shows the results for the shared
+memory implementation.
+
+\input{figure5.tex}
+
+\begin{table}[hbt]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|} \hline \hline
+{\em Problem size} 	& Number of bids	& Average time & Total time & Range of \\ 
+- & - & per bid (msec) & (seconds) & random numbers \\ \hline \hline 
+$1024 \times 1024$ & 30464  & 0.31 	& 9.44 	& 100000 \\ \hline
+$2048 \times 2048$ & 66360  & 0.63 	& 41.82	& 100000 \\ \hline
+$4096 \times 4096$ & 131151 & 55.64	& 7297.8 & 100000 \\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{Performance results on shared memory system}
+\label{fig_shmem_results}
+\end{table}
+
+\paragraph{A Note on Asynchronous Implementations}
+We chose not to use asynchronous variations of the Auction algorithm
+despite the \cite{beca89} claim that ``better asynchronous implementations
+outperform substantially the corresponding synchronous implementations
+on a shared memory machine.'' Asynchrony does not buy one anything.
+On the contrary, synchrony can cost one {\em when maintaining synchrony
+is expensive.} We found that
+maintaining synchrony did not induce a performance penalty. It must
+be stated that the minimal overhead suffered to maintain synchrony
+is because of the relatively few numbers of processors used and the
+uniformity of the load distribution.
+
+% {\em Do we get super-linear speedup ? }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Distributed Implementation}
+\label{dist}
+
+Parallel Virtual Machine (PVM), a public-domain
+software package developed at Oak Ridge National Laboratories
+was used to implement a distributed solution \cite{sun91}.
+We believed the Auction algorithm to be amenable to 
+a distributed solution for the following reasons:
+\begin{enumerate}
+
+\item One of the characteristics that makes a problem amenable to
+a distributed solution is that the problem descriptor should be
+small, the computing to be done should be large and the description
+of the solution should be small. This is in order that the
+communication costs can be subsumed by the computing time.
+
+One processor was designated as the master. The
+problem descriptor, the identity of the person bidding,
+was small. Broadcasting this information to 7 processors
+required roughly 1.5 msec. 
+This is roughly the time taken by a SPARCstation-2 processor 
+(running at 40 MHz and 28.5 MIPS) to perform
+one bid for $n = 1024$. Therefore, if $n = c p \times 1024$,
+then the overhead of the broadcast would be $\frac{1}{c}$.
+
+Broadcasting is implemented in PVM using point-to-point messages with
+recursive doubling.  Broadcast proceeds in ``rounds'', with the
+number of processors contributing to the broadcast effort doubling in each
+round. In round $r$, processor $k$ transmits to processor 
+$(k + 2^r)~{\rm mod}~p$ and receives no acknowledgement.
+A processor $k$ joins the broadcast effort at round $r_k$, where
+$r_k =$ number of 1's in the binary representation of $k~{\rm mod}~p$.
+
+In the implementations of PVM, the UDP protocol was used \cite{po80}.
+Therefore, the size (in bytes) of the data message, or 
+datagram, exhanged is computed
+as follows: size = Ethernet header + IP header + UDP header + data + Ethernet
+trailer = 14 + 20 + 8 + data  + 4 = 46 + data. Hence, to broadcast
+8 bytes of data, 54 bytes of data are sent. With a 10 Mbits/sec Ethernet,
+this should take 41 $\mu$sec ideally.
+
+\item The data could be partitioned easily by simply giving each 
+processor some of the columns of the weight matrix. The weight
+matrix does not change during the course of the computation.
+The information to be updated in each bid, 
+the price of the object for which a bid
+was submitted (if at all), is small.
+A further optimization was to combine this with the broadcast of
+the identity of the bidder. Since the cost of the broadcast is virtually
+unaffected by this additional information, this update introduced
+no additional overhead. 
+
+\item One of the often ignored but important
+factors that slow down distributed computations is load imbalance \cite{sun92}.
+There are two sources of load imbalance. One arises from
+the workload of other users on the different machines being used. 
+This was not relevant to us, since we had the machines to ourselves.  
+The second arises from computational
+imbalance. By partitioning the work in proportion to processor speeds,
+it was hoped that this imbalance could be redressed.
+
+\item Since each processor had its own access to memory, we hoped
+to redress the processor-to-memory bandwidth.
+
+\end{enumerate}
+
+\paragraph{Results and Discussion}
+The Auction algorithm was implemented on 15 SPARCstation-2 processors
+connected on a 10 Mbits/sec Ethernet. We found that 
+while there was no flaw in the rationale mentioned above,
+the performance was little short of disastrous. 
+
+Why was this so? The bottleneck was the ``accumulate'' 
+or ``gather'' routine. In a bid, 
+each processor, $k$, operates on the columns assigned to it.
+It calculates ${m}^k$, ${{nm}}^k$, ${price[j]}^k$, which are the values
+$m$, ${nm}$ and $price[j]$ would have had had the
+columns assigned to $k$ been all the columns of the weight matrix.
+Given these partial results, we needed to compute 
+$m$, $nm$, $price[j]$ and $k'$, the identity of the processor
+which has the object with the highest value 
+(i.e., $price[j] = {price[j]}^{k'}$).
+Since the partial results of each processor could be coalesced
+using a binary tree (as is done in the broadcast), we felt
+that this should not take significantly longer than the
+broadcast time. Note that it would be overly optimistic to expect
+the same time as the broadcast since the broadcast consists of 
+non-blocking sends whereas the accumulate involves both sends,
+receives and some small local computation. 
+The rapid degradation in performance that the accumulate caused 
+was unexpected. 
+
+Two approaches to performing the accumulate were tried: 
+(i) Serial: All processors send their partial information to
+the processor designated as master, and
+(ii) Recursive doubling:  The processors are laid out as the nodes of 
+a binary tree and a node sends its partial information is sent to the parent.
+The performance results are presented in Table~\ref{dist_gather_results}.
+
+\begin{table}[hbt]
+\begin{center}
+\begin{tabular}{|c|c|c|c|} \hline \hline
+{\em Number of Processors} & {\em  Serial } &  {\em Recursive doubling } & {\em Broadcast time} \\ 
+- & {\em Accumulate} & {\em Accumulate} & - \\ \hline
+7  	& 20.2	& 18.3	& 1.42 \\ \hline
+15  	& 41.91	& 30.9	& 1.46 \\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{Time (in msec) to accumulate partial results.}
+\label{dist_gather_results}
+\end{table}
+
+We came to two conclusions:
+\begin{enumerate}
+
+\item Given current hardware and software technology, 
+the overhead associated with
+transmissions makes it impractical to run applications which
+require small (of the order of a few msecs) latency.
+This raises the following possibility to decrease latency.
+Any information broadcast on an Ethernet is received by all processors.
+Each message has the id of the receiving processor and a processor simply
+ignores a message that does not belong to it. This suggests designating
+an id for the Parallel Virtual Machine (PVM) and have a processor
+read all messages that had either its id or the PVM id. 
+
+\item Given that the memory is distributed, slow response
+from even one processor would degrade the entire system performance.
+There is simply no way to dynamically reassign work. This makes
+this approach increasingly treacherous as the number of processors
+is increased, unless one is in a position to guarantee the workload
+on {\em all} the participating processors. 
+
+Note that the
+same criticism holds for an MIMD implementation (as on a CM-5 or
+Intel Delta). This does not hold true for a true shared memory
+system, where work can be dynamically
+re-allocated.  Of course, reallocating work means 
+re-distributing the data and it is not sure whether the necessary 
+bandwidth would be available especially since
+the Auction algorithm is communication intensive i.e.,
+the work done on each datum read is very small, thereby making it
+difficult to recover the cost of the communication.
+
+\end{enumerate}
+

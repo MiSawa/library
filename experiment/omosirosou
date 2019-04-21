@@ -1,0 +1,31 @@
+maximum density subgraph
+http://www.eecs.berkeley.edu/Pubs/TechRpts/1984/CSD-84-171.pdf
+
+
+
+一般的なテク
+============
+
+データ構造をマージする一般的なテク
+
+
+SRM632 で出たらしい.
+https://twitter.com/Mi_Sawa/status/430411999638327296
+容量依存のフローアルゴリズムを速くする一般的なテク is 容量スケーリングです. (容量が2^n以上ある辺だけ見て流して, 2^{n-1}以上ある辺だけ見て流して, ... とやると O(hoge U)系がO(hoge log U)系になる)
+
+decomposable searching problem を incremental にする一般的なテク
+
+submodular なコストの燃やす埋めるを mincut にする一般的なテク
+
+
+OO法
+====
+https://twitter.com/not_522/status/426783612910829568
+https://twitter.com/not_522/status/426783555436290048
+
+imos 法
+kitamasa 法
+iwi 法 (データ構造をマージする一般的なテク)
+wata 法 (全探索 + 二分探索)
+osa_k 法
+

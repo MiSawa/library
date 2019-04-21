@@ -1,0 +1,1 @@
+SET(LEMON_VERSION "trunk+662-f51c01a1b88e" CACHE STRING "LEMON version string.")

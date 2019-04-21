@@ -1,0 +1,252 @@
+
+こいつを読む.
+http://www.cs.princeton.edu/~rwerneck/papers/TW05-self-adjusting-top-tree.pdf
+
+1. introduction.
+
+歴史的ないきさつ, ST, topological, RC, ET - tree とかが出来ることについて.
+
+2. top trees.
+
+top-tree は, "compress" と "rake" という縮約操作を繰り返して, 木を階層構造にした感じのものを扱う.
+
+まず, base となる木の, 各頂点に対し, 隣接する各辺に circular order (a<b<c<a みたいな)を付ける.
+
+compress v :
+    次数 2 の頂点 v を, v に隣接する頂点 u, w を直接結ぶ辺 (u, w) で置き換える.
+rake v :
+    次数 1 の頂点 v と, v に隣接する頂点 x を取り, (v, x) の "次" の辺 (w, x) に v を埋め込んだと思いつつ v を消す.
+    (v, x) を (w, x) の上に rake したともいう.
+
+top-tree の葉は, 元の木の辺に対応していて, base cluster とか呼ばれるクラスタ.
+内点は, rake cluster か compress cluster に対応してる.
+
+内部情報をいじる操作は,
+join, split: rake か compress をする / とりやめる
+create, destroy: base cluster を作る / 消す
+
+外から出来る操作は,
+link(v, w) : 森に辺を追加
+cut(u, v) : 森から辺を削除
+expose(v, w) : v と w を "root cluster"(ユーザが見られる唯一のクラスタ)の端にする.
+
+
+3. representation.
+
+ひとつ, 次数 1 の頂点を固定して, 全ての辺をそいつに向けて directed tree にする.
+こういう木を unit tree と呼ぶことにする.
+
+次に, 木を "non-crossing edge disjoint path" で, それぞれ leaf から始まり他の path で終わるものに分割する.
+但し, root path (又は exposed path) は例外で, root で終わる.
+(これはタダの path-decomposition じゃん)(と思いきや終端の edge を含むか否かが違う)
+(non-crossing ってなんだ)(edge disjoint だからそれはそう)
+
+目標は, 全体を表す unit tree のクラスタを作ること.
+各 root-path の internal node v は, 2 つの root-path 上の neighbour と,
+零個以上の "outer neighour" を持つ.
+circular order で辺を管理していたので, outer neighbour は root path で二つの(空を許す) subseq に分割される.
+この subseq の各要素は, v を根とする unit tree で, この構造が再帰的に続く.
+
+同じ subseq のクラスタは, "rake tree" でくっついている.
+    - rake tree: root は全体の subseq を表し, 葉は各 unit tree を表す.
+      internal node は左の子を右の子の上に rake したもの.
+すると, 今は k 個の base cluster を含む path と, 高々 2k-2 個の outer cluster (それぞれ subtree を表す)からなるゲジゲジみたいなのがある.
+outer clusters を無視すると, path を, 葉が base cluster で内点が隣接するクラスタの compress を表す二分木 "compress tree" で表現できる.
+compress tree の各ノードは, root path の区間を表す.
+
+outer cluster は, root path に rake して扱う.
+これは, 遅延しておく: v に隣接する outer cluster は, v が compress される瞬間に rake する.
+これは, compress(v) を表すノードの "foster child"(養子) (<=> "proper children" がちょうど二つ) として扱う
+left foster child は proper left child, right foster child は proper right child に rake される.
+そのあと, compress v される.
+
+まとめると,
+- root path に接続する unit tree のクラスタを再帰的に計算する.
+- 各 root path 上の頂点に接続する unit tree 達をからなる rake tree を作る.
+- root path を表す compress tree を, foster child をくっつけながら作る.
+
+結局, rake tree と compress tree が交互に出てくる階層構造が出来る.
+
+
+Order within binary trees.
+rake tree は, 例の seq そのままの順序で bst にしておくということだった.
+一方, compress tree は, path-reversal をサポートするため, 若干ゆるい
+- copress(v) (端は u, w) は, その子の一方が u..v, もう一方が v..w を表す. (左右問わず)
+にする.
+正しい順序は, クラスタの端から復元出来る.
+ST-tree も同じテクを evert するために使っていた.
+
+
+Handles.
+link, cut, expose は vertex 本位で見ていたが, top tree は辺本位の味方をしている.
+なので, 各 vertex v に対し, "Handle" N_v を作る.
+- v が次数 2 以上なら, compress(v) を表す頂点にする.
+- 次数 1 なら, 最も上の non-rake な node で, 端として v を持つものにする.
+よって, 各頂点にハンドルされるのは, 高々 3 vertices.
+これは, explicit に管理する.
+
+
+
+4. updates
+path に対する操作をする前は, その path を必ず expose する.
+sec 3 では, root path は両端点次数 1 が必要だった.
+任意の v..w を扱うには,
+- v..w を subpath として含むような root path を持ってきて,
+- v, w の周りの compress を一時的に rake に変える
+をすればよい.
+前者を soft expose, 後者を hard expose と呼ぶ.
+
+
+4.1 soft expose
+- v と w が孤立点なら, 何もすることはない.
+- v = w か, v と w が非連結なら, N_v と N_w をそれぞれの component の root にする.
+- v != w で, 同じ連結成分のとき,
+    - vw (path v..w を表現するクラスタ) がほぼ top tree になっている, すなわち
+        - N_w が root
+        - N_v は N_w を保ちつつ, なるべく root に近い位置にある
+v, w が両方次数 2 以上の時, N_v, N_w, vw は相異なる.
+そうでない時, degenerate して, N_w = N_v とか, N_v = vw になる.
+
+!!!! Fig. 4 が完成予想図なので, それを見るべき.
+hard expose を簡単にするため, N_v と vw は right children であるようにする.
+(degenerate していない限り.)
+
+
+soft-expose は, Splay と Splice を使う. (ST-tree と同様)
+
+Splay:
+    普通の splay 木と同じ.
+    但し, rake tree と compress tree の境目を上ってまでは行わないみたいなのを,
+    guard というのを用意して, "par == guard ならやめる" で判断する.
+    compress tree 上で rotate をするとき, foster children は無視してもよい!!!
+    そうするとちょうどいい所にくっつく. (それはそう.)
+
+    splay する前に, evert 用にゆるめていた, compress node の左右の二分探索木条件を, splay するノードから root まで修正 (rectification) しなきゃいけない.
+    rectification で, 左の子が root から遠くなるようになる.
+    proper children が flip されたと同時に foster children も flip しようね.
+    これは top down にやる. (なんでじゃ)(まぁ最終的な向きがどっちかわからんからか)
+    非可換でも, path related な情報は reversed と二つ持ってごにょれば bottom up でよさそう.
+
+Splice:
+    internal path を繋ぎ変える操作.
+    rake tree から切り出して, 繋ぎ変える.
+    splice は, いくつかの local(compress/rake tree)-splay の後にやるやつ.
+    なので, raked tree の上の方に切り出してきたいのがあったりとかする.
+    Fig. 6, 7 を見るとよい. (vy がどこにあるかが違ったり, A,B,C が消えてたりするかもしれない)
+
+Expose the target:
+    soft_expose(v, w) をするとき, v を source, w を target と呼ぶ.
+    このフェーズでは, root を N_w にする.
+    具体的には,
+    - Local splay : N_w から遡りつつ, 各 compress/rake subtree で splay する
+    - Splice : N_w を root path に入れるように splice する.
+    - Global splay: N_w が root になるように, root path 内で splay.
+    をする.
+    Splice と Global splay はわりと自明 (今まで説明したようにすればよい).
+    Local splay はちょっとテクニカルで,
+    - N = N_w から始める.
+    - compress tree で N を splay する.
+    - rake tree が N のみからなるなら, N = par N として 次の local splay に.
+    - N の上の頂点 P を rake tree で splay する.
+    - 今の N の上の頂点 P' を, P を guard として splay する.
+    とすると, rake tree 上で, N_w からの path より前の部分と後ろの部分を分割できる.
+    splice の所の fig. 7 みたいにするため.
+
+
+Exposing the source
+    現状, N_w が root になっている.
+    root path が v--w を含むようにしたい.
+    もし, N_v = N_w なら, することはない.
+    そうでないなら, N_v を root の近くに持っていく.
+
+    w の次数によって場合分け:
+    - w が次数 1 の時,
+        N_v に Exposing the target と同じことをやる.
+        すると, w は root path の端点だから, 新たな root である N_v に w のハンドル N_w が一致する.
+    - w が次数 2 以上の時,
+        N_w は compress(w) になっている.
+        N_v にも, Exposing the tharget とほぼ同じことをやる.
+        但し, splay する時は, guard として N_w を置いておく.
+        N_v は,
+        - v が次数 2 以上なら N_w の子,
+        - 次数 1 なら N_w の端点なので N_v = N_w
+        になる.
+
+    soft expose の終了時の条件を満たすため, 左右の子を適当に swap して終わり.
+
+
+
+4.2 hard expose
+
+soft expose した後, 一時的に, v..w の祖先を raked node にする.
+次の exposose をする前に元に戻す.
+
+
+
+4.3 Cuts
+
+soft expose した後, N_v を切り離し, vw を消す.
+空いた穴は foster child の raked tree から order を preserve するように適切に取ってくる.
+
+4.4 Links
+
+soft expose (v, a), (w, b) したあと, Cuts の逆をやる.
+
+
+4.5 Implementation Issues
+
+Handling data
+    まず top-down に split, destroy を呼んで, 構造を変えたあと, bottom-up に join, create を呼ぶ.
+
+Data on vertices
+    各頂点に, (u, tmp[u]) みたいなひげを生やすことで扱う一般的なテクがある.
+    あとは, exposed vertices は explicit, そうでないのは implicit に扱うテク.
+     -> これ, 要するに両開区間で持つ?
+
+Non-local search
+    [3] を見ろ.  http://arxiv.org/abs/cs/0310065
+    木の上で二分探索とかしたい時のテクらしい.
+    普通に splay 木を辿るだけではないの?
+
+Roots
+    今は rooted でない時の話をしていたが, rooted でも実質同じ.
+    各クラスタに, そのクラスタの root のラベルを持っておけばよい.
+
+
+
+5. Analysis.
+
+
+6. Final Remarks.
+    top tree は ST-tree みたいに path 分解としての側面がよく見える.
+    実測で ST-tree の倍くらい遅い.
+
+    辺の ordering が無い時,
+        foster children は一個でいい. (phantom tree 同様).
+        splice, cut, link が簡単になる.
+
+    rake がデータに影響を及ぼさないなら, rake tree 消してよくて,
+    それはもはや ST-tree.
+
+
+
+
+思ったこと:
+    まず, 子に順序は要らんので, Splay Tree の l, r の他に foster 1 つでよい.
+    raked tree の持ち方は, "内点は rake, 葉は unit tree" みたいな感じなので, ややこしい.
+    raked tree を, 内点も unit tree を表すようにして, 但し, 実際は foster child として unit tree へのリンクを持つようにすると, 実装が楽になりそう?
+        rake node
+       /    |    \
+  rake node |  rake node
+       unit tree
+
+    みたいな感じ.
+    すると, local splay も splice も簡単になる.
+
+    hard expose の時どうするかが問題な気もする, うーむ.
+
+    なんか ST-tree の改造っぽい感じで作ってしまえばそれでいい気がするぞ...
+
+    それ phantom tree ってのと近いのでは??
+
+

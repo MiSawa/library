@@ -1,0 +1,207 @@
+
+
+
+C---------------------------------------------------------------------------
+C  AN EFFICIENT PARTIAL ENUMERATIVE ALGORITHM FOR THE MAXIMUM CLIQUE PROBLEM
+C
+C
+C  THE ALGORITHM  (INCLUDING THE FORTRAN CODE) IS DESCRIBED IN DETAILS IN:
+C  R. CARRAGHAN AND P.M. PARDALOS, AN EXACT ALGORITHM FOR THE MAXIMUM CLIQUE
+C  PROBLEM, OPERATIONS RESEARCH LETTERS 9 (1990), PP. 375-382
+C
+C
+C  AUTHORS          - PANOS M. PARDALOS AND RANDY CARRAGHAN    
+C
+C  WARRANTY         - NO WARRANTY EXPRESSED OR IMPLIED IS APPLICABLE
+C
+C
+C  ALL TIMING SUBROUTINES ARE USED FOR THE IBM 3090
+C
+C  INPUT PARAMETERS:
+C  N (NUMBER OF VERTICES)
+C  DENSITY (A NUMBER BETWEEN 0 AND 1)
+C  INCUMBENT (A LOWER BOUND ON THE MAX CLIQUE = 1 ALWAYS WORKS)
+C  SEED (SEED FOR GENERATING RANDOM GRAPHS)
+C
+C---------------------------------------------------------------------------
+C
+      PARAMETER (MAXN=2000, MAXM=2000)
+      INTEGER*2  N,ROW,COL
+      LOGICAL*1  MAT(MAXN,MAXN),TEMPLOG
+      INTEGER    EDGES
+      REAL       DENS
+      REAL*8     SEED
+      INTEGER*2  ACTNODE(MAXN),TEMP
+      INTEGER*2  ADJ(MAXM,MAXN)
+      INTEGER*2  NODE,MIN,MINNODE,EDGE(MAXN)
+      INTEGER*2  START(MAXN),LAST(MAXN),D,DTEMP,MAXCLIQUE,BEST(MAXN)
+C     REAL       T1,T2,SORTTIME,TRAVTIME
+C     REAL       TOTTIME
+ 
+C     MAXN       MAXIMUM NUMBER OF NODES IN GRAPH
+C     MAXM       GREATER OR EQUAL TO THE ACTUAL SIZE OF MAXCLIQUE
+C     N          NUMBER OF NODES IN GRAPH
+C     MAT        ADJACENCY MATRIX
+C     ACTNODE    ACTUAL NODES IN ORIGINAL MATRIX
+C     ADJ        REPRESENTS NODES FOUND AT ALL DEPTHS
+C     MAXCLIQUE  SIZE OF LARGEST CURRENTLY KNOW CLIQUE
+C     BEST       NODES IN LARGEST CURRENTLY KNOW CLIQUE
+C     D          CURRENT DEPTH OF TRAVERSAL
+C     START      NODE CURRENTLY BEING EXPANDED AT DEPTH D
+C     LAST       LAST NODE TO (POSSIBLY) BE EXPANDED AT DEPTH D
+ 
+C     -- GENERATION OF RANDOM GRAPH
+ 
+      WRITE(*,*) 'ENTER N, DENSITY, INCUMBENT, SEED'
+      READ(*,*) N,DENS,MAXCLIQUE,SEED
+      EDGES = 0
+      DO 10 ROW = 1,N-1
+        DO 15 COL = ROW+1,N
+          IF (GGUBFS(SEED).LT.DENS) THEN
+            EDGES = EDGES + 1
+            MAT(ROW,COL) = .TRUE.
+            MAT(COL,ROW) = .TRUE.
+          ELSE
+            MAT(ROW,COL) = .FALSE.
+            MAT(COL,ROW) = .FALSE.
+          END IF
+15      CONTINUE
+10    CONTINUE
+      DO 20 ROW = 1,N
+        MAT(ROW,ROW) = .FALSE.
+20    CONTINUE
+      WRITE(*,*) ' '
+      WRITE(*,85) 'TOTAL EDGES     ',EDGES
+ 
+C     -- MAINTAIN POINTERS TO ORIGINAL MATRIX
+ 
+C     CALL SECOND(T1)
+      DO 25 NODE = 1,N
+        ACTNODE(NODE) = NODE
+25    CONTINUE
+ 
+C     -- ORDER NODES BY INCREASING EDGE DENSITY
+ 
+      IF (DENS.GE..40) THEN
+        DO 30 ROW = 1,N
+          EDGE(ROW) = 0
+          DO 35 COL = 1,N
+            IF (MAT(ROW,COL)) EDGE(ROW) = EDGE(ROW)+1
+35        CONTINUE
+30      CONTINUE
+        DO 40 NODE = 1,N-2
+          MIN = N
+          DO 45 ROW = NODE,N
+            IF (EDGE(ROW).LT.MIN) THEN
+              MIN = EDGE(ROW)
+              MINNODE = ROW
+            END IF
+45        CONTINUE
+          EDGE(MINNODE) = EDGE(NODE)
+          IF (NODE.NE.MINNODE) THEN
+            TEMP = ACTNODE(NODE)
+            ACTNODE(NODE) = ACTNODE(MINNODE)
+            ACTNODE(MINNODE) = TEMP
+            DO 50 ROW = 1,N
+              TEMPLOG = MAT(ROW,NODE)
+              MAT(ROW,NODE) = MAT(ROW,MINNODE)
+              MAT(ROW,MINNODE) = TEMPLOG
+50          CONTINUE
+            DO 55 COL = 1,N
+              TEMPLOG = MAT(NODE,COL)
+              MAT(NODE,COL) = MAT(MINNODE,COL)
+              MAT(MINNODE,COL) = TEMPLOG
+55          CONTINUE
+          END IF
+          DO 60 COL = NODE,N
+            IF (MAT(NODE,COL)) EDGE(COL) = EDGE(COL) - 1
+60        CONTINUE
+40      CONTINUE
+      END IF
+C     CALL SECOND(T2)
+      SORTTIME = T2 - T1
+ 
+C     CALL SECOND(T1)
+      D = 1
+      START(1) = 0
+      LAST(1) = N
+C     MAXCLIQUE = 0
+      DO 65 COL = 1,N
+        ADJ(1,COL) = COL
+65    CONTINUE
+ 
+C     -- MAIN ALGORITHM
+ 
+70    START(D) = START(D) + 1
+      IF ((D+LAST(D)-START(D)).GT.MAXCLIQUE) THEN
+        DTEMP = D
+        D = D + 1
+        START(D) = 0
+        LAST(D) = 0
+C       -- DETERMINE NODE FOR NEXT DEPTH
+        DO 75 COL = (START(DTEMP)+1),LAST(DTEMP)
+          IF (MAT(ADJ(DTEMP,START(DTEMP)),ADJ(DTEMP,COL))) THEN
+            LAST(D) = LAST(D) + 1
+            ADJ(D,LAST(D)) = ADJ(DTEMP,COL)
+          END IF
+75      CONTINUE
+C       -- IF THE NEXT DEPTH DOESN'T CONTAIN ANY NODES, SEE IF A NEW
+C       -- MAXCLIQUE HAS BEEN FOUND AND RETURN TO PREVIOUS DEPTH
+        IF (LAST(D).EQ.0.) THEN
+          D = D - 1
+          IF (D.GT.MAXCLIQUE) THEN
+            MAXCLIQUE = D
+            DO 80 COL = 1,D
+              BEST(COL) = ADJ(COL,START(COL))
+80          CONTINUE
+          END IF
+        END IF
+      ELSE
+C       -- PRUNE, FURTHER EXPANSION WOULD NOT FIND A BETTER INCUMBENT
+        D = D - 1
+      END IF
+C     -- CONTINUE TRAVERSAL UNTIL A DEPTH OF ZERO IS REACHED
+      IF (D.GT.0.) GOTO 70
+C     CALL SECOND(T2)
+      TRAVTIME = T2 - T1
+ 
+C     -- OUTPUT THE MAXIMUM CLIQUE FOUND IN GRAPH
+ 
+      WRITE(*,85) 'MAXCLIQUE SIZE  ',MAXCLIQUE
+      WRITE(*,*) ' '
+      WRITE(*,*) (ACTNODE(BEST(I)), I = 1,MAXCLIQUE)
+      WRITE(*,*) ' '
+C     WRITE(*,90) 'ORDER MATRIX    ',SORTTIME
+C     WRITE(*,90) 'TRAVERSE TREE   ',TRAVTIME
+C     WRITE(*,*)  '                  --------'
+C     TOTTIME = SORTTIME + TRAVTIME
+C     WRITE(*,90) 'TOTAL TIME      ',TOTTIME
+85    FORMAT(1X,A,I10)
+90    FORMAT(1X,A,F10.4)
+      STOP
+      END
+ 
+C     -- IMSL RANDOM NUMBER GENERATOR
+ 
+      REAL FUNCTION GGUBFS (DSEED)
+      DOUBLE PRECISION   DSEED
+      DOUBLE PRECISION   D2P31M,D2P31
+      DATA               D2P31M/2147483647.D0/
+      DATA               D2P31 /2147483648.D0/
+      DSEED = DMOD(16807.D0*DSEED,D2P31M)
+      GGUBFS = DSEED / D2P31
+      RETURN
+      END
+ 
+C     -- DETERMINE CPU TIME, ISSUE 'GLOBAL TXTLIB UTILITY' FROM CMS 
+C     THIS TIMING SUBROUTINE WAS USED FOR AN IBM 3090 MACHINE
+ 
+C     SUBROUTINE SECOND(ECPU)                                           
+C     LOGICAL*1 DATTIM(23)                                              
+C     REAL*4 ECPU,ETIME,ETCPU                                          
+C     INTEGER LD                                                      
+C     LD = 23                                                           
+C     CALL DATETM(DATTIM,LD,ECPU,ETIME,ETCPU)                          
+C     RETURN                                                          
+C     END
+

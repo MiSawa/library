@@ -1,0 +1,653 @@
+Start testing: Feb 17 10:54 JST
+----------------------------------------------------------
+1/43 Testing: adaptors_test
+1/43 Test: adaptors_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/adaptors_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"adaptors_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"adaptors_test" end time: Feb 17 10:54 JST
+"adaptors_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/43 Testing: arc_look_up_test
+2/43 Test: arc_look_up_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/arc_look_up_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"arc_look_up_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"arc_look_up_test" end time: Feb 17 10:54 JST
+"arc_look_up_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/43 Testing: bellman_ford_test
+3/43 Test: bellman_ford_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/bellman_ford_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"bellman_ford_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"bellman_ford_test" end time: Feb 17 10:54 JST
+"bellman_ford_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/43 Testing: bfs_test
+4/43 Test: bfs_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/bfs_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"bfs_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"bfs_test" end time: Feb 17 10:54 JST
+"bfs_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/43 Testing: bpgraph_test
+5/43 Test: bpgraph_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/bpgraph_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"bpgraph_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"bpgraph_test" end time: Feb 17 10:54 JST
+"bpgraph_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/43 Testing: circulation_test
+6/43 Test: circulation_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/circulation_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"circulation_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"circulation_test" end time: Feb 17 10:54 JST
+"circulation_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/43 Testing: connectivity_test
+7/43 Test: connectivity_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/connectivity_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"connectivity_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"connectivity_test" end time: Feb 17 10:54 JST
+"connectivity_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+8/43 Testing: counter_test
+8/43 Test: counter_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/counter_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"counter_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"counter_test" end time: Feb 17 10:54 JST
+"counter_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+9/43 Testing: dfs_test
+9/43 Test: dfs_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/dfs_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"dfs_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"dfs_test" end time: Feb 17 10:54 JST
+"dfs_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+10/43 Testing: digraph_test
+10/43 Test: digraph_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/digraph_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"digraph_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"digraph_test" end time: Feb 17 10:54 JST
+"digraph_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+11/43 Testing: dijkstra_test
+11/43 Test: dijkstra_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/dijkstra_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"dijkstra_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"dijkstra_test" end time: Feb 17 10:54 JST
+"dijkstra_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+12/43 Testing: dim_test
+12/43 Test: dim_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/dim_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"dim_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"dim_test" end time: Feb 17 10:54 JST
+"dim_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+13/43 Testing: edge_set_test
+13/43 Test: edge_set_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/edge_set_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"edge_set_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"edge_set_test" end time: Feb 17 10:54 JST
+"edge_set_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+14/43 Testing: error_test
+14/43 Test: error_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/error_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"error_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"error_test" end time: Feb 17 10:54 JST
+"error_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+15/43 Testing: euler_test
+15/43 Test: euler_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/euler_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"euler_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"euler_test" end time: Feb 17 10:54 JST
+"euler_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+16/43 Testing: fractional_matching_test
+16/43 Test: fractional_matching_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/fractional_matching_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"fractional_matching_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"fractional_matching_test" end time: Feb 17 10:54 JST
+"fractional_matching_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+17/43 Testing: gomory_hu_test
+17/43 Test: gomory_hu_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/gomory_hu_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"gomory_hu_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"gomory_hu_test" end time: Feb 17 10:54 JST
+"gomory_hu_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+18/43 Testing: graph_copy_test
+18/43 Test: graph_copy_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/graph_copy_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"graph_copy_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"graph_copy_test" end time: Feb 17 10:54 JST
+"graph_copy_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+19/43 Testing: graph_test
+19/43 Test: graph_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/graph_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"graph_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"graph_test" end time: Feb 17 10:54 JST
+"graph_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+20/43 Testing: graph_utils_test
+20/43 Test: graph_utils_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/graph_utils_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"graph_utils_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"graph_utils_test" end time: Feb 17 10:54 JST
+"graph_utils_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+21/43 Testing: hao_orlin_test
+21/43 Test: hao_orlin_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/hao_orlin_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"hao_orlin_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"hao_orlin_test" end time: Feb 17 10:54 JST
+"hao_orlin_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+22/43 Testing: heap_test
+22/43 Test: heap_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/heap_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"heap_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"heap_test" end time: Feb 17 10:54 JST
+"heap_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+23/43 Testing: kruskal_test
+23/43 Test: kruskal_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/kruskal_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"kruskal_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"kruskal_test" end time: Feb 17 10:54 JST
+"kruskal_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+24/43 Testing: lgf_reader_writer_test
+24/43 Test: lgf_reader_writer_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/lgf_reader_writer_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"lgf_reader_writer_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"lgf_reader_writer_test" end time: Feb 17 10:54 JST
+"lgf_reader_writer_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+25/43 Testing: lgf_test
+25/43 Test: lgf_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/lgf_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"lgf_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"lgf_test" end time: Feb 17 10:54 JST
+"lgf_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+26/43 Testing: maps_test
+26/43 Test: maps_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/maps_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"maps_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"maps_test" end time: Feb 17 10:54 JST
+"maps_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+27/43 Testing: matching_test
+27/43 Test: matching_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/matching_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"matching_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"matching_test" end time: Feb 17 10:54 JST
+"matching_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+28/43 Testing: max_cardinality_search_test
+28/43 Test: max_cardinality_search_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/max_cardinality_search_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"max_cardinality_search_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"max_cardinality_search_test" end time: Feb 17 10:54 JST
+"max_cardinality_search_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+29/43 Testing: max_clique_test
+29/43 Test: max_clique_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/max_clique_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"max_clique_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"max_clique_test" end time: Feb 17 10:54 JST
+"max_clique_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+30/43 Testing: max_flow_test
+30/43 Test: max_flow_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/max_flow_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"max_flow_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"max_flow_test" end time: Feb 17 10:54 JST
+"max_flow_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+31/43 Testing: min_cost_arborescence_test
+31/43 Test: min_cost_arborescence_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/min_cost_arborescence_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"min_cost_arborescence_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"min_cost_arborescence_test" end time: Feb 17 10:54 JST
+"min_cost_arborescence_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+32/43 Testing: min_cost_flow_test
+32/43 Test: min_cost_flow_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/min_cost_flow_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"min_cost_flow_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"min_cost_flow_test" end time: Feb 17 10:54 JST
+"min_cost_flow_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+33/43 Testing: min_mean_cycle_test
+33/43 Test: min_mean_cycle_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/min_mean_cycle_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"min_mean_cycle_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"min_mean_cycle_test" end time: Feb 17 10:54 JST
+"min_mean_cycle_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+34/43 Testing: nagamochi_ibaraki_test
+34/43 Test: nagamochi_ibaraki_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/nagamochi_ibaraki_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"nagamochi_ibaraki_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"nagamochi_ibaraki_test" end time: Feb 17 10:54 JST
+"nagamochi_ibaraki_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+35/43 Testing: path_test
+35/43 Test: path_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/path_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"path_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.01 sec
+----------------------------------------------------------
+Test Passed.
+"path_test" end time: Feb 17 10:54 JST
+"path_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+36/43 Testing: planarity_test
+36/43 Test: planarity_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/planarity_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"planarity_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"planarity_test" end time: Feb 17 10:54 JST
+"planarity_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+37/43 Testing: radix_sort_test
+37/43 Test: radix_sort_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/radix_sort_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"radix_sort_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.06 sec
+----------------------------------------------------------
+Test Passed.
+"radix_sort_test" end time: Feb 17 10:54 JST
+"radix_sort_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+38/43 Testing: random_test
+38/43 Test: random_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/random_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"random_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"random_test" end time: Feb 17 10:54 JST
+"random_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+39/43 Testing: suurballe_test
+39/43 Test: suurballe_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/suurballe_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"suurballe_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"suurballe_test" end time: Feb 17 10:54 JST
+"suurballe_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+40/43 Testing: time_measure_test
+40/43 Test: time_measure_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/time_measure_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"time_measure_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+u: 0.01s, s: 0.08s, cu: 0s, cs: 0s, real: 0.100001s (476265 time queries)
+u: 1.93715e-09s, s: 0s, cu: 0s, cs: 0s, real: 1.96573e-09s (67108864 tests)
+Total: u: 0.13s, s: 0s, cu: 0s, cs: 0s, real: 0.131918s
+u: 1.95312e-05s, s: 0.000166016s, cu: 0s, cs: 0s, real: 0.000175644s (1024 tests)
+Total: u: 0.02s, s: 0.17s, cu: 0s, cs: 0s, real: 0.17986s
+<end of output>
+Test time =   0.41 sec
+----------------------------------------------------------
+Test Passed.
+"time_measure_test" end time: Feb 17 10:54 JST
+"time_measure_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+41/43 Testing: tsp_test
+41/43 Test: tsp_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/tsp_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"tsp_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"tsp_test" end time: Feb 17 10:54 JST
+"tsp_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+42/43 Testing: unionfind_test
+42/43 Test: unionfind_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/unionfind_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"unionfind_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"unionfind_test" end time: Feb 17 10:54 JST
+"unionfind_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+43/43 Testing: vf2_test
+43/43 Test: vf2_test
+Command: "/home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test/vf2_test"
+Directory: /home/misawa/Dropbox/Program/template/git/experiment/flow/lemon-main/build/test
+"vf2_test" start time: Feb 17 10:54 JST
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"vf2_test" end time: Feb 17 10:54 JST
+"vf2_test" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Feb 17 10:54 JST

@@ -1,0 +1,159 @@
+\begin{thebibliography}{GPV88}
+
+\bibitem[BC89]{beca89}
+D.~P. Bertsekas and D.~A. Castanon.
+\newblock {Parallel Synchronous and Asynchronous Implementations of the Auction
+  Algorithm}.
+\newblock Technical report, M. I. T., 1989.
+\newblock To appear in Parallel Computing.
+
+\bibitem[BCT91]{bct91}
+D.~P. Bertsekas, D.~A. Castanon, and H.~Tsakanakis.
+\newblock {Reverse Auction and the Solution of Inequality Constrained
+  Assignment Problems}.
+\newblock Technical report, M. I. T., 1991.
+
+\bibitem[Ber86]{be86}
+D.~P. Bertsekas.
+\newblock {A Distributed Algorithm for the Assignment Problem}.
+\newblock In {\em Proceedings of the 25th {IEEE} Conference on Decision and
+  Control}, 1986.
+\newblock MIT LIDS Tech Report P-1606.
+
+\bibitem[Ber91]{be91}
+D.~P. Bertsekas.
+\newblock {The Auction Algorithm for Assignment and Other Network Flow
+  Problems: A Tutorial}.
+\newblock {\em Interfaces}, 20(4):133--149, July-August 1991.
+
+\bibitem[Bla90]{bl90}
+T.~Blank.
+\newblock {The Maspar MP-1 Architecture}.
+\newblock In {\em Proceedings of the 35th {IEEE} International Computer
+  Conference}, pages 20--24, March 1990.
+\newblock San Francisco.
+
+\bibitem[Bra88]{br88}
+M.~Brady.
+\newblock {Parallel Bipartite Matching on SIMD Arrays}.
+\newblock Technical report, Lockheed Palo Alto Research Laboratory, 1988.
+
+\bibitem[Cas91]{ca91}
+D.~A. Castanon.
+\newblock {Reverse Auction Algorithms for Equality and Inequality Constrained
+  Assignment Problems}.
+\newblock Technical report, Boston University, 1991.
+\newblock Accepted at the First DIMACS International Algorithm Implementation
+  Challenge: Network Flows and Matching.
+
+\bibitem[Chr90]{ch90}
+P.~Christy.
+\newblock {Software to support Massively Parallel Computing on the Maspar
+  MP-1}.
+\newblock In {\em Proceedings of the 35th {IEEE} International Computer
+  Conference}, pages 29--33, March 1990.
+\newblock San Francisco.
+
+\bibitem[GPV88]{gpv88}
+A.~Goldberg, S.~Plotkin, and P.~Vaidya.
+\newblock {Sublinear-Time Parallel Algorithms for Matching and Related
+  Problems}.
+\newblock In {\em Proceedings of the 29th Symposium on Foundations of Computer
+  Science}, pages 174--185, 1988.
+
+\bibitem[Hol86]{ho86}
+W.~Holszytnski.
+\newblock {Geometric-Arithmetic Parallel Pocessor, GAPP}, February 1986.
+\newblock Canadian Patent Number 1202208.
+
+\bibitem[Hol87]{ho87}
+W.~Holszytnski.
+\newblock {The Assignment Problem on GSIMD Arrays}.
+\newblock Technical report, Lockheed Palo Alto Research Laboratory, 1987.
+
+\bibitem[HR88]{hora88}
+W.~Holszytnski and R.~Raghavan.
+\newblock {The Distributed MAcro Controller for GSIMD Arrays}.
+\newblock In Stuart~K. Tewksbury, editor, {\em Concurrent Computations:
+  Algorithms, Architecture and Technology}, chapter~35, pages 689--696. Plenum
+  Press, 1988.
+
+\bibitem[Jac90]{ja90}
+J.~H. Jackson.
+\newblock {The Data Transport Computer: A 3-D Massively Parallel SIMD
+  Computer}.
+\newblock In {\em Proceedings of {IEEE} {COMPCON}}, pages 264--269, Spring
+  1990.
+
+\bibitem[Lam77]{la77}
+L.~Lamport.
+\newblock Concurrent reading and writing.
+\newblock {\em Communications of the Association for Computing Machinery},
+  20(2):806--811, November 1977.
+
+\bibitem[Mun57]{mu57}
+J.~Munkres.
+\newblock {Algorithms for the Assignment and Transportation Problems}.
+\newblock {\em {SIAM} Journal on Computing}, 5(1):32--38, 1957.
+
+\bibitem[Nic90]{nic90}
+J.~R. Nickolls.
+\newblock {The Deisgn of the MasPar MP-1}.
+\newblock In {\em Proceedings of the 35th {IEEE} International Computer
+  Conference}, pages 25--28, March 1990.
+\newblock San Francisco.
+
+\bibitem[Pos80]{po80}
+J.~B. Postel.
+\newblock {User Datagram Protocol}.
+\newblock In {\em Internet Request for Comments RFC-768}, 1980.
+
+\bibitem[Ran87]{ra87}
+A.~G. Ranade.
+\newblock How to emulate shared memory.
+\newblock In {\em Proceedings of the 28th {IEEE} Symposium on Foundations of
+  Computer Science}, pages 185--194, 1987.
+
+\bibitem[Red78]{re78}
+S.~F. Reddaway.
+\newblock {DAP- A Flexible Number Cruncher}.
+\newblock In {\em Proceedings of the {LASL} Workshop on Vector and Parallel
+  Processors}, 1978.
+\newblock Los Alamos.
+
+\bibitem[RJN90]{rjn90}
+R.~Raghavan, K.~K. Jung, and H.T. Nguyen.
+\newblock {Fine Grain Parallel Processors and Real-Time Applications: MIMD
+  Controller/SIMD Array}.
+\newblock In {\em Proceedings of 10th Inetrnational Conference on Pattern
+  Recognition}, pages 324--331, June 1990.
+\newblock Atlantic City, New Jersey.
+
+\bibitem[Sco80]{va80}
+F.~Van Scoy.
+\newblock {The Parallel Recognition of Classes of Graphs}.
+\newblock {\em IEEE Tranactions on Computers}, 29(7):563--570, July 1980.
+
+\bibitem[Sub92]{su192}
+R.~Subramonian.
+\newblock Designing synchronous algorithms for asynchronous processors.
+\newblock Technical report, University of Californinia, Berkeley, 1992.
+
+\bibitem[Sun91]{sun91}
+V.~S. Sunderam.
+\newblock {PVM: A Framework for Parallel Distributed Computing}.
+\newblock Technical report, Emory Unversity and Oak Ridge National Laboratory,
+  1991.
+
+\bibitem[Sun92]{sun92}
+V.~S. Sunderam, February 1992.
+\newblock Personal Communication.
+
+\bibitem[WZ91]{weze91}
+J.~M. Wein and S.~A. Zenios.
+\newblock {On the Massively Parallel Solution of the Assignment Problem}.
+\newblock {\em Journal of Parallel and Distributed Computing}, 13:228--236,
+  1991.
+
+\end{thebibliography}
+

@@ -1,0 +1,354 @@
+From dimacs.rutgers.edu!trick Fri Nov 13 15:24:05 EST 1992
+Received: by alice; Fri Nov 13 15:24:15 EST 1992
+Received: by inet.att.com; Fri Nov 13 15:24 EST 1992
+Received: by shakespeare.rutgers.edu (5.59/SMI4.0/RU1.5/3.08) 
+	id AA05506; Fri, 13 Nov 92 15:24:05 EST
+Date: Fri, 13 Nov 92 15:24:05 EST
+From: trick@dimacs.rutgers.edu (Mike Trick)
+Message-Id: <9211132024.AA05506@shakespeare.rutgers.edu>
+To: dsj@research.att.com
+Subject: The Overview
+Status: RO
+
+The Overview file
+
+\documentstyle[12pt]{article}
+\title{Clique and Coloring Problems\\Literature and Open Problems}
+\author{}
+\date{Last revision: \today}
+\begin{document}
+\maketitle
+{\narrower\it This paper is a work in process.  We will be adding more
+references and details of the references given as we find them.  If
+you have information you think should be included, please send a note
+to {\tt challenge@dimacs.rutgers.edu}.}
+
+\section{Introduction}
+
+Given an undirected graph, a {\it clique} of the graph is a set of
+mutually adjacent vertices.  A {\it maximum clique} is, naturally, a
+clique whose number of vertices is at least as large as that for any
+other clique in the graph.  If the vertices have weights then a {\it
+maximum weighted clique} is a clique with a larger sum of vertex
+weights than any other clique.
+
+A (vertex) {\it coloring} of an undirected graph is an assignment of a
+label to each node.  It is required that the labels on the pair of
+nodes incident to any edge be different.  A {\it minimum coloring} of
+a graph is a coloring that uses as few different labels as possible.
+
+Clique and coloring problems are very closely related.  It is
+straightforward to see that the size of the maximum clique is a lower
+bound on the minimum number of labels needed to color a graph.  
+
+Many problems of practical interest can be modeled as clique and
+coloring problems.  The general form of these applications involves
+forming a graph with nodes representing items of interest.  An edge
+connects two ``compatible'' items.  The maximum clique problem is then
+to find as large a set of pairwise compatible items as possible.  The
+minimum coloring problem is to assign a color to each item so that
+every compatible pair is assigned different colors.
+
+Both of these problems are formally NP--hard for general graphs
+\cite{GaJo79}.  It therefore seems unlikely that it will be
+possible to find a fast (i.e. polynomial-time) algorithm to solve these
+problems.  In fact, based on the results of \cite{GaJo76,???}
+it seems unlikely that it is even possible to find an approximate
+solution to these problems quickly.
+
+Despite these negative results, it is still necessary to find
+solutions to large clique and coloring problems.  The applications do
+not go away just because of the formal complexity of the problem.
+Therefore, it is important for us to determine how difficult clique
+problems are to solve in practice.  Do hard instances only occur
+rarely?  Are hard--to--approximate instances almost pathological?
+What structures in problems make it difficult to solve these problems,
+and how can those structures be avoided?  The purpose of this note
+(which is currently an evolving document) is to outline some past
+research on solving clique and coloring problems and to identify some
+possible research directions.
+
+In the next section, we discuss a few typical applications of the
+maximum clique and minimum coloring problems.  In
+section~\ref{sec:alg}, we discuss a number of alternative solution
+approaches that have been tried in the past.  In
+section~\ref{sec:open} we talk about some suggested research
+directions.  
+
+\section{Sample Applications}
+
+Both coloring and clique models are useful in a variety of
+applications (since one bounds the other, most applications are
+applicable to either).  In this section, we discuss a few typical
+applications.
+
+\subsection{Frequency Assignment}  Gamst \cite{Ga86} examines a
+problem in assigning frequencies to mobile radios and other users of
+the electromagnetic spectrum.  In the simplest case, two customers
+that are sufficiently close must be assigned different frequencies,
+while those that are distant can share frequencies.  The problem of
+minimizing the number of frequencies is then a graph coloring problem.
+
+In the general setup examined by Gamst, there is a required distance
+(in terms of ``steps'' on the frequency list) between the customers
+(so this generalizes graph coloring, where the required distance is
+either 0 or 1).  The objective is to use as few frequencies as
+possible.  For this more general problem, a lower bound can be derived
+by considering all customers that have to be at least one frequency
+apart.  The largest clique in the resulting graph is then a lower
+bound on the number of frequencies required.  There are other bounds
+that also involve finding large cliques, including node weighted
+cliques.
+
+This application also provides a seemingly good setting for on--line
+algorithms depending on the ability to change frequencies midstream.
+
+\subsection{Pattern Matching} Ogawa \cite{Og86} has an interesting
+application involving pattern recognition.  Given a ``target'' picture
+and an input picture (which involve only a set of points), a related
+compatibity graph is created based on pairs of points.  A maximum
+clique represents a large number of mutually consistent pairs (where
+``mutually consistent'' can include a number of restrictions,
+including angular relationships as well as the requirement that no
+point be matched with more than one other) and can then be used to
+represent the resulting fit.  This model seems to correctly recognize
+affine transformations as well as moderately nonlinear
+transformations.
+
+\subsection{Time Tabling and Scheduling}  Many scheduling problems
+involve allowing for a number of pairwise restrictions on which jobs
+can be done simultaneously.  For instance, in attempting to schedule
+classes at a university, two courses taught by the same faculty member
+cannot be scheduled for the same time slot.  Similarly, two course
+that are required by the same group of students also should not
+conflict.  The problem of determing the minimum number of time slots
+needed subject to these restrictions is a graph coloring problem.
+This problems has been studied by many researchers, including
+Leighton \cite{Le79}, Opsu and Roberts \cite{OpRo81}, and de Werra
+\cite{De85}.
+
+\subsection{Register Allocation}  One very active application for
+graph coloring is register allocation.  The register allocation
+problem is to determine the contents of a limited number of hardware
+registers during program execution.  Variables in registers can be
+accessed much quicker than those not in registers. Typically, however,
+there are far more variables than registers so it is necessary to
+assign multiple variables to registers.  Variables conflict with each
+other if they are both used within a short period of time (for
+instance, within a subroutine).  The goal is to assign variables that
+do not conflict so as to minimize the use of non--register memory.
+
+A simple approach to this is to create a graph where the nodes
+represent variables and an edge represents conflict between its nodes.
+A coloring is then a conflict--free assignment.  If the number of
+colors used is less than the number of registers then a conflict--free
+register assignment is possible.  Some papers that outline and expand
+on this method include Chaitin \cite{Ch82}, Chaitin et. al
+\cite{ChAuChCoHoMa81}, Chow and Hennessy \cite{ChHe84,ChHe90}, and
+Briggs, Cooper, Kennedy, and Torczon \cite{BrCoKeTo89}.
+
+\subsection{Designing a Printed Circuit Board Tester}  A printed
+circuit board tester involves placing probes onto a board.  A probe
+can determine if a portion of a board is working correctly.  Since
+probes have a particular size, not every component can be checked in
+one pass.  The problem of maximizing the number of components checked
+in one pass can be formulated as a clique problem:  each node
+represents a component and an edge represents two nodes that are too
+close to be checked simultaneously.  A clique in this graph is then a
+set of components that can be checked in one pass.  This is an example
+of a {\it geometric} clique problem and has been studied by Yu,
+Goldschmidt and Chen \cite{YuGoCh92} and Yu. Kouvelis, and Luo
+\cite{YuKoLu92}.
+
+\subsection{Analysis of Biological and Archeological Data}  In biology
+and archeology, a standard model for relating objects is that of a
+tree.  Trees can represent the division of a species into two separate
+species or the division of features of some artifact (like pottery or
+pins).  Species do not come with histories, however, nor are artifacts
+completely dated.  Therefore, it is necessary to deduce the tree
+structure from the features of the items.  
+
+One approach to this is to create a distance measure between the
+items.  If the distance measure represents distances along a tree,
+then that tree is a good estimate for the underlying, ``real'' tree.
+Normally, the distances do not represent a tree, so it is necessary to
+find a tree that accurately estimates the true distances.  One
+approach to this, suggested by Barth\'elemy and Gu\'enoche
+\cite{BaGu91}, creates a graph as follows: the nodes of the graph
+represent partitions of the items.  These partitions are chosen
+because items within a partition are closer to each other than to
+those in the other side of the partition.  Two nodes are adjacent if
+the partitions are consistent with coming from the same tree (which
+reduces to an inclusion condition).  A clique in this graph represents
+a set of partitions that can be formed into a tree.  Maximum cliques
+attempt to encapsulate as much of the partition data as possible.  For
+more information, see Chapter 5 of \cite{BaGu91}.
+
+\section{Solution Approaches}
+\label{sec:alg}
+
+\subsection{Cliques} 
+There have been a number of attempts to create algorithms that solve
+the clique problem.  An early attempt that illustrates the advantages
+of publishing computer codes is that of Bron and Kerbosch \cite{BrKe73},
+which is still often used to compare approaches.  This paper, as well
+as those by Akkoyunlu \cite{Ak73}, Gerhards and Lindenberg \cite{GeLi79} and
+Loukakis and Tsouros \cite{LoTs82}, is an implicit enumeration
+routines with varying levels of testing to eliminate dominated
+solutions.
+
+Polyedral approaches have been suggested by Nemhauser and Trotter
+\cite{NeTr75} and Balas and Samuelsson \cite{BaSa77}.  
+
+Tarjan and Trojanowski \cite{TaTr77} develop a recursive routine which
+has a worst case bound of $O(2^{n/3})$.
+
+Babel \cite{Ba91} is a branch and bound approach where the bounds are
+find by graph coloring heuristics.  One interesting aspect of this
+work is that the resulting algorithm is analyzed and various classes
+are characterized where the branch and bound algorithm performs in
+polynomial time.
+
+Balas and Xue \cite{BaXu91} develop a branch and bound procedure for
+the maximum weight clique problem by using, at its core, an algorithm
+for minimum weight coloring of triangulated graphs and represents one
+approach for using algorithms for structured graphs to solve the
+problem for unstructured graphs.  This is an extension from the
+unweighted clique--finding method of Balas and Yu \cite{BaYu86}.
+
+There is not enough time or space to summarize the vast amount of
+research that has been done on theoretical and practical methods for
+solving the clique problem for restricted classes of graphs.  Since
+most of the classes examined are ``perfect graphs'' of one form or
+another, Golumbeck \cite{Go80} is a good place to begin.
+
+Some general approaches to finding cliques have been analyzed in the
+case of random graphs (where typically a random graph is one chosen
+uniformly at random from the set of all labelled graphs), where
+Bollob\'as and Erd\"os \cite{BoEr76} have very strong bounds on the size
+of the largest clique.  Pittel \cite{Pi82} has analyzed a number of
+heuristics for such graphs, and found none that will find the largest
+clique in this model.  Jerrum \cite{Je92} has extended this work to
+include heuristics based on simulated annealing.
+
+\subsection{Coloring}
+
+There have been a number of heuristics developed for graph coloring.
+The most common heuristic is the technique of successive augmentation.
+In this approach a partial coloring is found on a small number of
+vertices and this is extended vertex by vertex until the entire graph
+is colored.  Examples of varients of this approach include Welsh and
+Powell \cite{WePo67}, Matula, Marble and Isaacson \cite{MaMaIs72},
+Johnson \cite{Jo74}, Grimmet and McDiarmid \cite{GrMc75}, Br\'elaz
+\cite{Br79}, Leighton \cite{Le79}, Johri and Matula \cite{JoMa82},
+Wigderson \cite{Wi83}, and Berger and Rompel \cite{BeRo90}.
+
+Some of these algorithms are also applicable to the {\it on--line}
+coloring problem.  In the on--line problem, the graph is only
+determined one node at a time.  Once a node is seen, it is necessary
+to color that node immediately.  This color is then fixed and other
+nodes are shown.  This is similar to most successive augmentation
+heuristics except that the ordering of nodes to be colored cannot be
+set by the heuristic.  This models some natural phenomena but is also
+a very large restriction on the class of heuristics examined.
+Examples of this line of research include \cite{???}.
+
+More general heuristic techniques that have been tried include
+simulated annealing (Chams, Hertz, and De Werra \cite{ChHeDe87} and
+Johnson et. al \cite{JoArMcSc91}) and tabu search (Hertz and De Werra
+\cite{HeDe87}).  Issues related to finding an appropriate neighborhood
+structure for coloring graphs are described by Morgenstern and Shapiro
+\cite{MoSh90}. 
+
+
+\section{Open Problems and Suggested Research}
+
+\label{sec:open}
+
+Here are a few suggestions to stimulate thinking on computational
+aspects of finding cliques and coloring in graphs.
+
+\begin{enumerate}
+
+\item Implement and test algorithms and heuristic methods.  This is
+the most direct sort of project at hand.  Devise a new method or
+modify an existing method and see how well it solves instances.  There
+are no limitations to the solution method:  it might be polyhedrally
+based, it might involve clever enumeration, or might use any of a host
+of other approaches.
+
+\item Examine general purpose heuristic methods.  This is a
+tremendous opportunity to use cliques as a problem area to explore new
+techniques in heuristic problem solving. 
+There are a number of general techniques that might be of interest for
+solving clique and coloring problems.  These include tabu search
+\cite{???}, genetic algorithms \cite{???}, and simulated annealing
+\cite{AaKo89,Ce85,CoEgGo88,KiGeVe83,VaAa87}.  Johnson, Aragon,
+McGeoch, and Schevon \cite{JoArMcSc91} have used simulated annealing
+for the graph coloring problem.  Is there anything in this problem
+that makes it particularly amenable to solution by one of these
+approaches?  Is there anything that makes it particularly difficult?
+
+\item Explore the role of randomization.  Most of the algorithms
+created are completely deterministic.  Can randomization help in
+solving these types of problems?
+
+\item Experiment on alternative  machine architectures, including
+parallel and vector processors.  How can multiple processors be
+exploited in solving these problems?  This could be either via
+distributed computing (generally with high communications costs,
+heterogeneous machines, and/or limited connectivity) or with such
+special purpose machines as Connection Machine computers.
+
+\item Examine real world problems.  The clique problem is commonly
+claimed to have a great deal of applicability.  Most computational
+work, however, is done with random graphs.  How do real world problems
+differ from such random graphs?  How would the conclusions drawn from
+past research be different if real problems were solved?  
+
+\item Create and examine alternative generators.  Consider the nodes
+of a graph as points in the Euclidean plane where an edge occurs only
+if the corresponding nodes are sufficiently close (or sufficiently far
+away).  Is this an interesting problem generator?  Do algorithms
+perform well or poorly for it?  What other generators have interesting
+properties?
+
+\item Examine ``pathological'' examples.  For each optimization
+algorithm developed, there is a class of examples for which the
+algorithm does well and a class for which it does poorly.  Can you
+characterize why an algorithm does poorly?  Alternatively, can you
+determine a large, interesting, class for which certain algorithms
+work well?
+
+\item Examine planar graphs.  The four color theorem, as proved by
+\cite{???} is actually a constructive theorem that gives an $O(n^2)$
+algorithm for 4--coloring a graph.  This algorithm seems completely
+impractical due to the large constants involved.  Morgenstern and
+Shapiro \cite{MoSh91} provide some heuristics for such graphs and might
+be seen as a starting point for this class of interesting graphs.
+
+\item Examine neighborhood structures.  One aspect of these problems
+that makes solution difficult is the lack of a natural neighborhood
+structure for local search.  Neighborhood structures for these
+problems tend either to be too narrow (leading to poor local optima)
+or too broad (leaving a difficult neighborhood problem).  What are
+some alternative neighborhoods and how can they be effectively
+searched?
+
+\item Examine more fundamental issues in computational testing using these
+problems as a testbed.  How should algorithms and heuristics be
+compared across environments?  Does good computational work require
+outstanding ``hacking'' ability, or is there some more fundamental
+measure independent of implementation?  Are there alternatives to
+worst case bounds (which can be warped by a small number of
+pathological instances) and average case results (which often are not
+particularly robust to changes in the probabilistic assumptions).
+
+\end{enumerate}
+
+\bibliographystyle{plain}
+\bibliography{clique}
+
+
+\end{document}
+

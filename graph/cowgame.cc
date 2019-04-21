@@ -60,9 +60,9 @@ struct CowGame{//{{{
                     cont = true;
                 }
             }
-            if(cont and !i) return -inf;
+            if(cont and !i) return infeasible;
         }
-        if(v[t] > inf/2) return +inf;
+        if(v[t] > inf/2) return unbound;
         return v[t];
     }//}}}
 };//}}}

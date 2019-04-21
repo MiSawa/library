@@ -1,0 +1,553 @@
+%!PS
+%%Version: 3.3
+%%DocumentFonts: (atend)
+%%Pages: (atend)
+%%EndComments
+%
+% Version 3.3 prologue for troff files.
+%
+
+/#copies 1 store
+/aspectratio 1 def
+/formsperpage 1 def
+/landscape false def
+/linewidth .3 def
+/magnification 1 def
+/margin 0 def
+/orientation 0 def
+/resolution 720 def
+/rotation 1 def
+/xoffset 0 def
+/yoffset 1 def
+
+/roundpage true def
+/useclippath true def
+/pagebbox [0 0 612 792] def
+
+/R  /Times-Roman def
+/I  /Times-Italic def
+/B  /Times-Bold def
+/BI /Times-BoldItalic def
+/H  /Helvetica def
+/HI /Helvetica-Oblique def
+/HB /Helvetica-Bold def
+/HX /Helvetica-BoldOblique def
+/CW /Courier def
+/CO /Courier def
+/CI /Courier-Oblique def
+/CB /Courier-Bold def
+/CX /Courier-BoldOblique def
+/PA /Palatino-Roman def
+/PI /Palatino-Italic def
+/PB /Palatino-Bold def
+/PX /Palatino-BoldItalic def
+/Hr /Helvetica-Narrow def
+/Hi /Helvetica-Narrow-Oblique def
+/Hb /Helvetica-Narrow-Bold def
+/Hx /Helvetica-Narrow-BoldOblique def
+/KR /Bookman-Light def
+/KI /Bookman-LightItalic def
+/KB /Bookman-Demi def
+/KX /Bookman-DemiItalic def
+/AR /AvantGarde-Book def
+/AI /AvantGarde-BookOblique def
+/AB /AvantGarde-Demi def
+/AX /AvantGarde-DemiOblique def
+/NR /NewCenturySchlbk-Roman def
+/NI /NewCenturySchlbk-Italic def
+/NB /NewCenturySchlbk-Bold def
+/NX /NewCenturySchlbk-BoldItalic def
+/ZD /ZapfDingbats def
+/ZI /ZapfChancery-MediumItalic def
+/S  /S def
+/S1 /S1 def
+/GR /Symbol def
+
+/inch {72 mul} bind def
+/min {2 copy gt {exch} if pop} bind def
+
+/setup {
+	counttomark 2 idiv {def} repeat pop
+
+	landscape {/orientation 90 orientation add def} if
+	/scaling 72 resolution div def
+	linewidth setlinewidth
+	1 setlinecap
+
+	pagedimensions
+	xcenter ycenter translate
+	orientation rotation mul rotate
+	width 2 div neg height 2 div translate
+	xoffset inch yoffset inch neg translate
+	margin 2 div dup neg translate
+	magnification dup aspectratio mul scale
+	scaling scaling scale
+
+	/Symbol /S Sdefs cf
+	/Times-Roman /S1 S1defs cf
+	0 0 moveto
+} def
+
+/pagedimensions {
+	useclippath userdict /gotpagebbox known not and {
+		/pagebbox [clippath pathbbox newpath] def
+		roundpage currentdict /roundpagebbox known and {roundpagebbox} if
+	} if
+	pagebbox aload pop
+	4 -1 roll exch 4 1 roll 4 copy
+	landscape {4 2 roll} if
+	sub /width exch def
+	sub /height exch def
+	add 2 div /xcenter exch def
+	add 2 div /ycenter exch def
+	userdict /gotpagebbox true put
+} def
+
+/pagesetup {
+	/page exch def
+	currentdict /pagedict known currentdict page known and {
+		page load pagedict exch get cvx exec
+	} if
+} def
+
+/decodingdefs [
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg /y exch def counttomark 2 idiv {y moveto show} repeat}
+	{neg moveto {2 index stringwidth pop sub exch div 0 32 4 -1 roll widthshow} repeat}
+	{neg moveto {spacewidth sub 0.0 32 4 -1 roll widthshow} repeat}
+	{counttomark 2 idiv {y moveto show} repeat}
+	{neg setfunnytext}
+] def
+
+/setdecoding {/t decodingdefs 3 -1 roll get bind def} bind def
+
+/w {neg moveto show} bind def
+/m {neg dup /y exch def moveto} bind def
+/done {/lastpage where {pop lastpage} if} def
+
+/f {
+	dup /font exch def findfont exch
+	dup /ptsize exch def scaling div dup /size exch def scalefont setfont
+	linewidth ptsize mul scaling 10 mul div setlinewidth
+	/spacewidth ( ) stringwidth pop def
+} bind def
+
+/changefont {
+	/fontheight exch def
+	/fontslant exch def
+	currentfont [
+		1 0
+		fontheight ptsize div fontslant sin mul fontslant cos div
+		fontheight ptsize div
+		0 0
+	] makefont setfont
+} bind def
+
+/sf {f} bind def
+
+/cf {
+	dup length 2 idiv
+	/entries exch def
+	/chtab exch def
+	/newfont exch def
+
+	findfont dup length 1 add dict
+	/newdict exch def
+	{1 index /FID ne {newdict 3 1 roll put} {pop pop} ifelse} forall
+
+	newdict /Metrics entries dict put
+	newdict /Metrics get
+	begin
+		chtab aload pop
+		1 1 entries {pop def} for
+		newfont newdict definefont pop
+	end
+} bind def
+
+%
+% A few arrays used to adjust reference points and character widths in some
+% of the printer resident fonts. If square roots are too high try changing
+% the lines describing /radical and /radicalex to,
+%
+%	/radical	[0 -75 550 0]
+%	/radicalex	[-50 -75 500 0]
+%
+% Move braceleftbt a bit - default PostScript character is off a bit.
+%
+
+/Sdefs [
+	/bracketlefttp		[201 500]
+	/bracketleftbt		[201 500]
+	/bracketrighttp		[-81 380]
+	/bracketrightbt		[-83 380]
+	/braceleftbt		[203 490]
+	/bracketrightex		[220 -125 500 0]
+	/radical		[0 0 550 0]
+	/radicalex		[-50 0 500 0]
+	/parenleftex		[-20 -170 0 0]
+	/integral		[100 -50 500 0]
+	/infinity		[10 -75 730 0]
+] def
+
+/S1defs [
+	/underscore		[0 80 500 0]
+	/endash			[7 90 650 0]
+] def
+%
+% Tries to round clipping path dimensions, as stored in array pagebbox, so they
+% match one of the known sizes in the papersizes array. Lower left coordinates
+% are always set to 0.
+%
+
+/roundpagebbox {
+    7 dict begin
+	/papersizes [8.5 inch 11 inch 14 inch 17 inch] def
+
+	/mappapersize {
+		/val exch def
+		/slop .5 inch def
+		/diff slop def
+		/j 0 def
+		0 1 papersizes length 1 sub {
+			/i exch def
+			papersizes i get val sub abs
+			dup diff le {/diff exch def /j i def} {pop} ifelse
+		} for
+		diff slop lt {papersizes j get} {val} ifelse
+	} def
+
+	pagebbox 0 0 put
+	pagebbox 1 0 put
+	pagebbox dup 2 get mappapersize 2 exch put
+	pagebbox dup 3 get mappapersize 3 exch put
+    end
+} bind def
+
+%%EndProlog
+%%BeginSetup
+mark
+/linewidth 0.5 def
+/xoffset 0 def
+/yoffset 1 def
+/#copies 1 store
+/magnification 1 def
+%%FormsPerPage: 1
+/formsperpage 1 def
+
+/landscape false def
+/resolution 720 def
+setup
+2 setdecoding
+%%EndSetup
+%%Page: 1 1
+/saveobj save def
+mark
+1 pagesetup
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 1 1
+%%Page: 2 2
+/saveobj save def
+mark
+2 pagesetup
+cleartomark
+saveobj restore
+%%BeginGlobal
+%
+% Version 3.3 drawing procedures for dpost. Automatically pulled in, but only
+% when needed.
+%
+
+/inpath false def
+/savematrix matrix def
+
+/Dl {
+	inpath
+		{pop pop neg lineto}
+		{newpath neg moveto neg lineto stroke}
+	ifelse
+} bind def
+
+/De {
+	/y1 exch 2 div def
+	/x1 exch 2 div def
+	/savematrix savematrix currentmatrix def
+	neg exch x1 add exch translate
+	x1 y1 scale
+	0 0 1 0 360
+	inpath
+		{1 0 moveto arc savematrix setmatrix}
+		{newpath arc savematrix setmatrix stroke}
+	ifelse
+} bind def
+
+/Da {
+	/dy2 exch def
+	/dx2 exch def
+	/dy1 exch def
+	/dx1 exch def
+	dy1 add neg exch dx1 add exch
+	dx1 dx1 mul dy1 dy1 mul add sqrt
+	dy1 dx1 neg atan
+	dy2 neg dx2 atan
+	inpath
+		{arc}
+		{newpath arc stroke}
+	ifelse
+} bind def
+
+/DA {
+	/dy2 exch def
+	/dx2 exch def
+	/dy1 exch def
+	/dx1 exch def
+	dy1 add neg exch dx1 add exch
+	dx1 dx1 mul dy1 dy1 mul add sqrt
+	dy1 dx1 neg atan
+	dy2 neg dx2 atan
+	inpath
+		{arcn}
+		{newpath arcn stroke}
+	ifelse
+} bind def
+
+/Ds {
+	/y2 exch def
+	/x2 exch def
+	/y1 exch def
+	/x1 exch def
+	/y0 exch def
+	/x0 exch def
+	x0 5 x1 mul add 6 div
+	y0 5 y1 mul add -6 div
+	x2 5 x1 mul add 6 div
+	y2 5 y1 mul add -6 div
+	x1 x2 add 2 div
+	y1 y2 add -2 div
+	inpath
+		{curveto}
+		{newpath x0 x1 add 2 div y0 y1 add -2 div moveto curveto stroke}
+	ifelse
+} bind def
+%%EndGlobal
+/saveobj save def
+mark
+10 R f
+4937 4470 930 4470 Dl
+4938 463 4938 4470 Dl
+931 462 4938 462 Dl
+930 4469 930 462 Dl
+1732 4418 1732 4470 Dl
+1732 462 1732 514 Dl
+2534 4418 2534 4470 Dl
+2534 462 2534 514 Dl
+3335 4418 3335 4470 Dl
+3335 462 3335 514 Dl
+4137 4418 4137 4470 Dl
+4137 462 4137 514 Dl
+982 3468 930 3468 Dl
+4938 3468 4886 3468 Dl
+982 2466 930 2466 Dl
+4938 2466 4886 2466 Dl
+982 1464 930 1464 Dl
+4938 1464 4886 1464 Dl
+(ng50)1005 4553 w
+10 S f
+(_)1205 4553 w
+10 R f
+(100 0)1 225 1 1255 4553 t
+10 S f
+(<)1505 4553 w
+10 R f
+(= x)1 131 1 1560 4553 t
+10 S f
+(<)1716 4553 w
+10 R f
+(= 5000, 0)2 381 1 1771 4553 t
+10 S f
+(<)2177 4553 w
+10 R f
+(= y)1 131 1 2232 4553 t
+10 S f
+(<)2388 4553 w
+10 R f
+(= 0.08)1 256 1 2443 4553 t
+1171 2439 1131 2385 Dl
+1211 2516 1171 2440 Dl
+1251 2667 1211 2517 Dl
+1291 2977 1251 2668 Dl
+1331 3307 1291 2977 Dl
+1371 3530 1331 3307 Dl
+1411 3699 1371 3531 Dl
+1451 4064 1411 3700 Dl
+1491 4073 1451 4065 Dl
+1532 4180 1492 4073 Dl
+1572 4237 1532 4181 Dl
+1612 4259 1572 4238 Dl
+1652 4263 1612 4259 Dl
+1692 4277 1652 4263 Dl
+1732 4341 1692 4278 Dl
+1772 4375 1732 4341 Dl
+1812 4394 1772 4376 Dl
+1852 4399 1812 4395 Dl
+1892 4407 1852 4399 Dl
+1932 4423 1892 4407 Dl
+1972 4429 1932 4424 Dl
+2012 4431 1972 4429 Dl
+2053 4448 2013 4432 Dl
+2093 4451 2053 4448 Dl
+2133 4454 2093 4452 Dl
+2173 4456 2133 4454 Dl
+2213 4457 2173 4456 Dl
+2253 4458 2213 4457 Dl
+2293 4458 2253 4458 Dl
+2333 4459 2293 4458 Dl
+2373 4459 2333 4459 Dl
+2413 4460 2373 4459 Dl
+2453 4460 2413 4460 Dl
+2493 4460 2453 4460 Dl
+2533 4460 2493 4460 Dl
+2574 4461 2534 4460 Dl
+2614 4461 2574 4461 Dl
+2654 4461 2614 4461 Dl
+2694 4461 2654 4461 Dl
+2734 4461 2694 4461 Dl
+2774 4462 2734 4461 Dl
+2814 4462 2774 4462 Dl
+2854 4462 2814 4462 Dl
+2894 4462 2854 4462 Dl
+2934 4462 2894 4462 Dl
+2974 4462 2934 4462 Dl
+3014 4462 2974 4462 Dl
+3055 4462 3015 4462 Dl
+3095 4463 3055 4462 Dl
+3135 4463 3095 4463 Dl
+3175 4463 3135 4463 Dl
+3215 4463 3175 4463 Dl
+3255 4463 3215 4463 Dl
+3295 4463 3255 4463 Dl
+3335 4463 3295 4463 Dl
+3375 4463 3335 4463 Dl
+3415 4463 3375 4463 Dl
+3455 4463 3415 4463 Dl
+3495 4463 3455 4463 Dl
+3535 4463 3495 4463 Dl
+3576 4463 3536 4463 Dl
+3616 4463 3576 4463 Dl
+3656 4464 3616 4463 Dl
+3696 4464 3656 4464 Dl
+3736 4464 3696 4464 Dl
+3776 4464 3736 4464 Dl
+3816 4464 3776 4464 Dl
+3856 4464 3816 4464 Dl
+3896 4464 3856 4464 Dl
+3936 4464 3896 4464 Dl
+3976 4464 3936 4464 Dl
+4016 4464 3976 4464 Dl
+4056 4464 4016 4464 Dl
+4097 4464 4057 4464 Dl
+4137 4464 4097 4464 Dl
+4177 4464 4137 4464 Dl
+4217 4464 4177 4464 Dl
+4257 4464 4217 4464 Dl
+4297 4464 4257 4464 Dl
+4337 4464 4297 4464 Dl
+4377 4464 4337 4464 Dl
+4417 4464 4377 4464 Dl
+4457 4464 4417 4464 Dl
+4497 4464 4457 4464 Dl
+4537 4464 4497 4464 Dl
+1171 1577 1131 1301 Dl
+1211 1792 1171 1578 Dl
+1251 1964 1211 1792 Dl
+1291 2108 1251 1965 Dl
+1331 2229 1291 2108 Dl
+1371 2333 1331 2229 Dl
+1411 2424 1371 2334 Dl
+1451 2505 1411 2425 Dl
+1491 2576 1451 2505 Dl
+1532 2640 1492 2576 Dl
+1572 2699 1532 2641 Dl
+1612 2751 1572 2699 Dl
+1652 2799 1612 2751 Dl
+1692 2844 1652 2800 Dl
+1732 2885 1692 2844 Dl
+1772 2922 1732 2885 Dl
+1812 2958 1772 2923 Dl
+1852 2991 1812 2959 Dl
+1892 3023 1852 2992 Dl
+1932 3053 1892 3024 Dl
+1972 3080 1932 3053 Dl
+2012 3106 1972 3081 Dl
+2053 3131 2013 3106 Dl
+2093 3154 2053 3131 Dl
+2133 3176 2093 3154 Dl
+2173 3198 2133 3177 Dl
+2213 3216 2173 3198 Dl
+2253 3237 2213 3217 Dl
+2293 3254 2253 3237 Dl
+2333 3272 2293 3255 Dl
+2373 3287 2333 3272 Dl
+2413 3304 2373 3288 Dl
+2453 3319 2413 3305 Dl
+2493 3334 2453 3320 Dl
+2533 3349 2493 3335 Dl
+2574 3362 2534 3349 Dl
+2614 3375 2574 3363 Dl
+2654 3389 2614 3376 Dl
+2694 3401 2654 3390 Dl
+2734 3413 2694 3401 Dl
+2774 3425 2734 3414 Dl
+2814 3435 2774 3425 Dl
+2854 3446 2814 3436 Dl
+2894 3457 2854 3447 Dl
+2934 3467 2894 3457 Dl
+2974 3477 2934 3468 Dl
+3014 3486 2974 3477 Dl
+3055 3496 3015 3487 Dl
+3095 3505 3055 3496 Dl
+3135 3514 3095 3506 Dl
+3175 3522 3135 3514 Dl
+3215 3530 3175 3522 Dl
+3255 3539 3215 3531 Dl
+3295 3546 3255 3539 Dl
+3335 3555 3295 3547 Dl
+3375 3562 3335 3555 Dl
+3415 3570 3375 3563 Dl
+3455 3577 3415 3570 Dl
+3495 3583 3455 3577 Dl
+3535 3591 3495 3584 Dl
+3576 3597 3536 3591 Dl
+3616 3603 3576 3597 Dl
+3656 3610 3616 3604 Dl
+3696 3616 3656 3610 Dl
+3736 3622 3696 3616 Dl
+3776 3629 3736 3623 Dl
+3816 3634 3776 3629 Dl
+3856 3640 3816 3634 Dl
+3896 3646 3856 3641 Dl
+3936 3651 3896 3646 Dl
+3976 3656 3936 3651 Dl
+4016 3661 3976 3656 Dl
+4056 3667 4016 3662 Dl
+4097 3672 4057 3667 Dl
+4137 3677 4097 3672 Dl
+4177 3682 4137 3677 Dl
+4217 3687 4177 3683 Dl
+4257 3692 4217 3687 Dl
+4297 3696 4257 3692 Dl
+4337 3700 4297 3696 Dl
+4377 3706 4337 3701 Dl
+4417 3710 4377 3706 Dl
+4457 3714 4417 3710 Dl
+4497 3718 4457 3714 Dl
+4537 3723 4497 3719 Dl
+cleartomark
+showpage
+saveobj restore
+%%EndPage: 2 2
+%%Trailer
+done
+%%Pages: 2
+%%DocumentFonts: Times-Roman Symbol

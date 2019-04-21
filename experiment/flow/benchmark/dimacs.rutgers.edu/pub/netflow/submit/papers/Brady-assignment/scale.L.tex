@@ -1,0 +1,271 @@
+\section{Parallel Cost-scaling Algorithm}
+\label{scale}
+
+\subsection{Description of the Algorithm}
+\label{desc_cost_scale}
+
+Recently, we have designed Assignment algorithms for SIMD 
+implementation, building upon theoretical advances in algorithms 
+based on the PRAM model \cite{br88}.  The technique is an adaptation of 
+the sublinear time parallel PRAM algorithm of \cite{gpv88}, which uses 
+a two-phase cost scaling approach.  We obtain an $O(n^{5/3} \log^2 n C)$ 
+time algorithm, where weights are integral and $C$ represents 
+the weight of maximum magnitude (one extra factor of $\log n C$ is 
+incurred by the cost scaling iterations).  The best previous SIMD 
+algorithms appear to have been $O(n^2 \log n C)$ on a bit-serial $n \times n$ 
+mesh.  This algorithm is fairly memory efficient, using only a 
+small constant number of $\log n$-bit registers per processor.  To 
+adapt these ideas to the strict SIMD model, we employ a novel technique 
+in which the data is permuted in each pass to make optimal use 
+of the local communication.
+
+A step-by-step description of the algorithm is given below.  The 
+outer loop of the algorithm performs cost scaling, in which a solution 
+is obtained through iterative improvement.  Steps 1 through 4 in ``Match()''
+(Figure~\ref{match_procedure})
+begin with a solution which is 2 $ \epsilon$-optimal and improve it to an 
+$ \epsilon$-optimal solution (see \cite{be86}  for a discussion of the cost 
+scaling technique).  The algorithm has two major phases.  The first is 
+a very efficient "Push and Relabel" strategy which takes one step on 
+many augmenting paths in parallel.  The second is a more powerful but 
+slower (in constant factor) routine which searches for complete 
+disjoint augmenting paths.  Each pass of the second phase finds all 
+of the one-step paths of the first phase, some multiple-step paths, 
+and at least one complete augmenting path.  Thus, while each pass of 
+the second phase takes longer, it may require fewer total passes.  
+Theoretically, the first phase is more efficient at the beginning 
+when there are many free vertices, and later the second phase becomes more 
+efficient because it is guaranteed to increase the matching 
+size by at least one during every pass.  There is, therefore, an 
+optimal ``cutoff'' point at which one should switch from phase 1 to 2.
+
+\begin{figure}
+\begin{tabbing}
+\hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \=  \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \kill
+Match( ) \\ 
+\{ \\
+\> $\forall i \forall j : c(i, j) \leftarrow n \times w(i, j)$ \\
+\> $\epsilon \leftarrow  C$ \\
+\> {\bf while}  ($ \epsilon > 1$){\bf do } \\
+\> \> Step 1: \> \> \> Find the minimum unmatched edge cost $C_j$ in each column $j$. \\
+\> \> Step 2: \> \> \> Subtract $C_j$ from all $c(i, j)$ in each column $j$. \\
+\> \> Step 3: \> \> \> Unmatch arcs $(i, j)$ with $c(i, j) \geq \epsilon$. \\
+\> \> Step 4: \> \> \> {\bf while} there are unmatched vertices (number %
+			of matches $< n$) {\bf do} \\
+\> \> \> \> \> \> {\bf if} ( number of matches $<$ Crossover ) \\
+\> \> \> \> \> \> \> CALL Push\_Relabel\_Matching( ); \\
+\> \> \> \> \> \> {\bf else} \\
+\> \> \> \> \> \> \> CALL Shortest\_Path\_Matching( ); \\
+\> \> \> \> \> \> {\bf endif} \\
+\> \> \> \> \> {\bf endwhile} \\
+\> \> $\epsilon \leftarrow \epsilon/2$; \\
+\> {\bf endwhile} \\
+\} \\
+\end{tabbing}
+\caption{Procedure Match()}
+\label{match_procedure}
+\end{figure}
+
+Let us describe the computation required in each phase.  
+Phase 1 is described below as ``Push\_Relabel\_Matching''
+(Figure~\ref{push_relabel_matching}).
+Phase 1 begins by marking eligible edges from free $S$-vertices, using 
+simple row and column operations.  Next, a maximal matching of 
+eligible edges is computed, by sweeping the matrix diagonally from the 
+top left to the bottom right.  (This subroutine is not much more 
+time consuming than the row/column operations.)  Finally, 
+after selecting new matched edges and unmatching the old 
+matched edges with which they conflict, we update the dual variables.  
+This consists of increasing the costs in each column until the 
+column's matched edge has cost  $= \epsilon$.  We then decrease the 
+costs in each row until the cost of some unmatched edge in the row 
+is $= - \epsilon$. Again, these require only simple row and column 
+operations.  Each step is $O(n)$, times the bit length of 
+the operation, with very small constants.
+
+\begin{figure}
+\begin{tabbing}
+\hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \=  \kill
+Push\_Relabel\_Matching( ) \\
+\{ \\
+\> Step 4.1: \> \> \> $matched\_cost(i, j) \leftarrow$ column broadcast of the cost of the matched edge.  \\
+\> \> \> \> 	(If the column is unmatched, broadcast $\epsilon$.) \\
+\> Step 4.2: \> \> \> For all unmatched edges, mark eligible if %
+			$c(i, j) < matched\_cost(i, j)$. \\
+\> Step 4.3: \> \> \> Find a maximal matching of the eligible edges. \\
+\> Step 4.4: \> \> \> Column broadcast the newly matched edges $new\_M$. \\
+\> Step 4.5: \> \> \> Unmatch the old edges from newly matched columns.   \\
+\> \> \> \> 		Match the new edges in these columns. \\
+\> Step 4.6: \> \> \> Modify the column costs (increase them as high as %
+		  possible without making  the \\
+\> \> \> \> 	  matched edge in the column have $c(i, j) > \epsilon$).  Column broadcast the cost of the \\
+\> \> \> \> 	newly matched edges. \\
+\> Step 4.7: \> \> \> Modify the row costs (decrease them as low as possible %
+		  without making the \\
+\> \> \> \> 	  unmatched edge in the row have $c(i, j) <\epsilon$).\\
+\} \\
+\end{tabbing}
+\caption{Procedure Push\_Relabel\_Matching( )}
+\label{push_relabel_matching}
+\end{figure}
+
+The second phase, called ``Shortest\_Path\_Matching''
+(Figure~\ref{shortest_path_matching}), works much 
+harder at the dual variable update stage, finding all feasible 
+augmenting paths.  In place of the maximal matching step, this allows us to 
+take as many steps as possible along augmenting paths from the free 
+$S$-vertices.  Furthermore, by reordering the rows and columns, we can 
+find these augmenting paths in one diagonal sweep of the matrix, in 
+time not much greater than a simple maximal matching.  The 
+time-consuming portion of phase 2 is in finding all feasible 
+augmenting paths.  The heart of the computation is the calculation of 
+the shortest path from every $S$-vertex to some free $T$-vertex.  
+Theoretically, by carefully pipelining the operations, such a 
+distance computation can be done in $O(n \log n C)$ steps on a 
+bit-serial $n \times n$ array \cite{va80}, and our implementation 
+achieves this bound.  Therefore, phase 2 has the same asymptotic 
+complexity as phase 1.  However, the constant for the distance 
+computation is nearly two orders of magnitude greater than that 
+of the row/column operations, which limits its competitiveness.
+
+\begin{figure}
+\begin{tabbing}
+\hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \= \hspace*{.25in} \=  \kill
+Shortest\_Path\_Matching( ) \\
+\{ \\
+\> Step 4.1: \> \> \> Compute the distance labels (shortest paths to free $T$-vertices). \\
+\> Step 4.2: \> \> \> Permute rows and columns to order $S$-vertices and $T$-vertices by  \\
+\> \> \> \> 	  distance label, with the largest distance labels on top/left. \\
+\> Step 4.3: \> \> \> Mark eligible edges (those which appear in shortest augmenting paths). \\
+\> Step 4.4: \> \> \> Set reduced costs $cb(i, j)$ as: \\ 
+\> \> \> \> $cb(i, j) \leftarrow c(i, j) - d_s(i) + d_t(j)$ where arcs $(i, j)$ are unmatched. \\
+\> \> \> \> $cb(i, j) \leftarrow c(i, j) - d_t(j) + d_s(i)$ where arcs $(j, i)$ are matched. \\ 
+\> Step 4.5: \> \> \> Find and augment along maximal $S$-paths, starting at the largest distance labels. \\
+\> Step 4.6: \> \> \> Set $c(i, j) \leftarrow cb(i, j).$ \\
+\} \\
+\end{tabbing}
+\caption{Procedure Shortest\_Path\_Matching( )}
+\label{shortest_path_matching}
+\end{figure}
+
+\subsection{Performance Results of the Parallel Cost-Scaling Algorithm}
+\label{results_scale}
+
+We have implemented the above algorithm on the Wavetracer, and 
+report some results 
+(Tables~\ref{fig_results_scale}, ~\ref{fig_distance_scale},
+~\ref{fig_combine_scale} and ~\ref{fig_xxx_scale})
+for each of the two major subroutines (in 
+msec) and for the entire algorithm (in sec) below.  
+These results are for random data in the range $0 - 1000$.
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|} \hline \hline
+{\em Size }     & {\em Time (in sec)}  \\ \hline
+$8 \times 8$	&   0.02	\\ \hline    
+$16 \times 16$	&   0.07   	\\ \hline
+$32 \times 32$	&   0.31  	\\ \hline
+$64 \times 64$	&   1.11 	\\ \hline
+$128 \times 128$&   6.37 	\\ \hline \hline 
+\end{tabular}
+\end{center}
+\caption{Push Relabel Matching Algorithm ($w(i, j) = i \times j$)}
+\label{fig_results_scale}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|} \hline \hline
+{\em Size }     & {\em Time (in sec)}  \\ \hline
+$8 \times 8$	&    0.06	\\ \hline    
+$16 \times 16$	&   0.28   	\\ \hline
+$32 \times 32$	&   1.06  	\\ \hline
+$64 \times 64$	&   4.34 	\\ \hline
+$128 \times 128$&  27.8 	\\ \hline \hline 
+\end{tabular}
+\end{center}
+\caption{Shortest Path Matching Algorithm ($w(i, j) = i \times j$)}
+\label{fig_distance_scale}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|} \hline \hline
+$128 \times 128$	& {\em Time (in sec)}  \\ \hline
+Crossover at 115 	& 7.3 \\ \hline
+Crossover at 121 	& 6.1 \\ \hline
+Crossover at 125 	& 3.9 \\ \hline
+Crossover at 126 	& 3.7 \\ \hline
+Crossover at 127 	& 3.4 \\ \hline
+No Crossover 		& 6.4 \\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{Combination of Shortest Path and Push Relabel Matching Algorithm
+($w(i, j) = i \times j$)}
+\label{fig_combine_scale}
+\end{table}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{|c|c|c|c|} \hline \hline
+{\em Size }     & {\em Push\_Relabel cycles} & {\em Distance cycles} & {\em Algorithm Cycles} \\ \hline
+-      			& (in msec) & (in msec) & (in sec) \\ \hline
+$256 \times 256$	&    1.9	& 93 	& 1.12 \\ \hline
+$512 \times 512$	&    3.5 	& 19	& 3.33 \\ \hline 
+$1024 \times 1024$	&    6.9 	& 404   & 13.1 \\ \hline
+$2048 \times 2048$	&   13.8 	& 843	& 34.9 \\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{Average Performance of the Push Relabel and Shortest Path passes,
+and of the entire algorithm for large input size (random 11-bit data)}
+\label{fig_xxx_scale}
+\end{table}
+
+Note that the second phase (distance) is about 50 to 60 times 
+slower than the first.  For the random data tested, the average 
+time was faster when using only phase 1 to completion, rather than 
+invoking phase 2.  It appears that for some examples it may be 
+advantageous to use the second phase, only for the very last matched 
+edge (i.e., for one pass, to avoid a potentially very large number 
+of passes of phase 1).
+
+One particularly difficult problem is obtained by setting each 
+cost $c(i,j)$ to $i \times j$.  For this problem, we find that a 
+256-node instance requires 333 sec using ``Push\_Relabel\_Matching'' 
+alone, and only 156 sec when crossing over to full distance 
+calculation when all but one pair of nodes are matched.  Crossing over sooner 
+degrades this improvement, however.
+
+The speed of these ``theoretically good'' algorithms
+does not appear competitive with the Munkres implementation
+of the previous section.  However, it must be noted that
+we no longer have the use of
+row and column busses, providing row and column OR in
+one cycle.
+The Push Relabel pass would
+be much improved by row/column broadcast, since row/column
+minimum and maximum are heavily used.
+For the 16K processor, machine, this would mean a factor
+of 128 improvement in row and column operations.
+The shortest path matching algorithm could probably also be
+improved by using the busses.
+The majority of the time is spent in the distance computation,
+which, as written, uses only local communication.  However,
+with broadcast we could write a much simpler non-pipelined
+algorithm with perhaps an order of magnitude improvement
+in the constant.
+A second source slowdown is in the cost scaling.  To
+simplify implementation, we used only a scale factor
+of 2.  Therefore, a great many cost scaling passes were
+required, often only to bring a few new edges into the
+lower epsilon range.  For instance, consider a 1K by 1K problem
+with data in the range 0 to 1000.  The number of passes
+with scale factor 2 would be about 20, while increasing
+the scale to just 10 would result in 6 passes.
+Finally, one critical difficulty with these algorithms
+is that they require more storage per processor than
+the Munkres algorithm.  This limits the size of problem
+which can be efficienty run on the parallel array, and
+is a reason why we have added the Auction algorithm
+to our implementations, as discussed in the next section.

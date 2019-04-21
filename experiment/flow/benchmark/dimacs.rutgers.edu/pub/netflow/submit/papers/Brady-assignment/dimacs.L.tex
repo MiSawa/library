@@ -1,0 +1,63 @@
+\documentstyle[12pt]{article}
+
+%%%%%%%%%% Use following for submission %%%%%%%%%%%%%%%%%%%%%%%%
+\marginparwidth 0.75in
+\topmargin -0.30in
+\textheight 8.8in
+\textwidth 6.9in
+\evensidemargin -0.2in
+\oddsidemargin -0.2in
+\headsep 10pt
+\parskip=.05in
+\columnsep 0.25in
+% \pagestyle{empty}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \oddsidemargin  0pt
+% \evensidemargin 0pt
+% \marginparwidth 40pt
+% \marginparsep 10pt
+% \topmargin 0pt
+% \headsep 0pt
+% \textheight 8.5in
+% \textwidth 6.5in
+% \parskip=.07in
+
+\newtheorem{observation}{Observation}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{claim}{Claim}[section]
+
+%% So that the text can occupy 0 percent of the page.
+\renewcommand{\textfraction}{0}       
+%% So that a float can take up 100 percent of the page when it is at the top
+\renewcommand{\topfraction}{1}
+%% So that a float can take up 100 percent of the page when it is at the bottom
+\renewcommand{\bottomfraction}{1}
+
+% \renewcommand{\baselinestretch}{1.2}
+
+\begin{document}
+\bibliographystyle{alpha}
+
+\input{abstract}
+
+\input{intro}
+
+\input{defns}
+
+\input{munkres}
+
+\input{scale}
+
+\input{auction}
+
+\input{end}
+
+\input{ack}
+
+\bibliography{../ref,dim_ref}
+
+\end{document}

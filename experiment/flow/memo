@@ -1,0 +1,186 @@
+
+最小費用流の直観的な理解のひとつ: (from Network Flows)
+    辺容量, 辺費用付きの(街っぽい)ネットワークがある.
+    1 種類の品物がある.
+    行商人は, 各街 v で B_v だけ在庫がある.
+    (正の場合はそれだけどこかに持って行って売らなきゃいけなくて, 負ならどこかから買ってきて補填する)
+    各街 v での価格 p_v を定めると,
+
+    - 行商人達は貪欲なので, 残余グラフ上で,
+        "u で買って v へ運んで v で売ると儲かる",
+        i.e. p[u] + C[u, v] < p[v]
+             <=> C[u, v] + p[u] - p[v] < 0
+      ようなところは全部流れるから, そういうのは無くなるし,
+             p[u] + C[u, v] > p[v]
+             <=> C[u, v] + p[u] - p[v] > 0
+      なところは何も流れない.
+          (コスト, 容量) = (-c, 0)
+      な逆辺を追加 しておくと, 前者だけでよいが, LP にするときに f = -f' が必要でめんどい.
+
+    これが満たされるように運ぶと, その他の在庫を運ぶメリットはないから,
+    その場で p[u] で売買してしまう.
+    そもそもそういう問題として認識するべきだったりするの?
+
+
+最小費用流の双対問題は,
+    価格設定 p であって, 行商人が上記のように動いた時に, なるべく行商人が得をしないものを作る問題.
+    行商人の得は, "在庫を取引する額" + "行商人が移動で儲ける額"
+    i.e. + (sum_v B_v p_v) + (sum_e U_e alpha_e)
+    但し, alpha_e は, max(e を使った時の行商人の儲け, 0).
+
+    よって, 問題は
+        min. + (sum_v B_v p_v) + (sum_e U_e alpha_e)
+        s.t. p_u + C_{u, v} - p_v >= - alpha_{u, v}
+             alpha_{u, v} >= 0
+             p : free
+    になる.
+    alpha_e を max(-C^p_e, 0) = - min(C^p_e, 0) のまま書くと,
+        min. + (sum_v B_v p_v) + (sum_e U_e max(-C^p_e, 0))
+           (=  (sum_v B_v p_v) - (sum_e U_e min(C^p_e, 0))
+        s.t. p : free
+    という, min. 部分だけの LP になる.
+
+    ところで, これは明らかに feasible で, unbound になる条件は,
+        頂点の partition A, B であって,
+        A に含まれる p を同時に inf 下げると目的関数値が inf 下がる
+    というもの.
+    これは, ( e in B x A の C^p_e は上がるが, max(-C^p_e, 0) で 0 でバウンドしてることを考えると)
+        sum_{v in A} (B_v x) + (sum_{e in AxB} U_e * (-(C^p_e + x))) < 0
+        where x -> -inf
+        i.e.
+        - sum_{v in A} B_v + sum_{e in AxB} U_e < 0
+        i.e.
+        sum_{v in A} B_v > (sum_{e in AxB} U_e)
+    という条件になる.
+    すなわち, B-flow が存在しない場合で, つまり primal-infeasible な場合.
+    (それはそう)
+    これはつまり, 一部の値段をどんどん下げた時に, 在庫取引で失う金が, 移動で儲ける金を上回るとも思える.
+
+    さて, optimality condition を考えよう.
+    今, optimal solution p を取ってきたとき,
+    E を C^p_e の符号で E_>, E_<, E_0 の三つの集合に分割する.
+    E_>=, E_<= も定義しておく.
+    上と同様に, 頂点の partition A, B を取ると,
+    A に含まれる p を同時に eps 上げる摂動が, 目的関数を下げてはならない.
+    すなわち,
+        sum_{v in A} B_v  - sum_{e in AxB cap (E_<=)} U_e
+                          + sum_{e in BxA cap (E_< )} U_e
+                          >= 0
+    が必要. すなわち,
+        sum_{v in A} B_v >= sum_{e in AxB cap (E_<=)} U_e
+                          - sum_{e in BxA cap (E_< )} U_e
+    だが, むしろ
+        sum_{v in A} B_v - sum_{e in AxB cap (E_<)} U_e
+                         + sum_{e in BxA cap (E_<)} U_e
+                         >= sum_{e in AxB cap (E_=)} U_e
+    と書いたほうがよい.
+    左辺は, "負コストだから絶対使う辺を含めた, A 側の余剰量" で,
+    右辺は, "コスト 0 だから, どう使ってもよい辺たちで, A から B に送れる量".
+    従って, コスト 0 の辺のみで, B-flow を流せることがわかる.
+
+
+一方, 最小費用流問題の主問題は, 行商人の戦略を決定する問題.
+    行商人のフロー f であって, 在庫の需要供給を満たすように移動するもののうち,
+    コストが最小になるようなものを作る.
+    コストは, (sum_e C_e f_e).
+    よって, 問題は
+        max. - (sum_e C_e f_e)
+        s.t. sum pm f_e = B_v
+             0 <= f <= U
+    になる.
+
+弱双対性:
+    まず, feasible flow f, feasible potential p に対し,
+    min(C^p_e, 0) <= C^p_e に f を掛け,
+        min(C^p_e, 0) f_{u, v} <= f_{u, v} (p_u - p_v) + f_{u, v} C_{u, v}
+    だから,
+        sum_e min(C^p_e, 0) f_e <= sum_v B_v p_v + sum_e f_e C_e
+    で,
+        - (sum_e C_e f_e) <= (sum_v B_v p_v) + (sum_e f_e max(-C^p_e, 0))
+                          <= (sum_v B_v p_v) + (sum_e U_e max(-C^p_e, 0))
+    である.
+    これが弱双対定理.
+
+強双対性:
+    上で = が成り立つためには,
+    1. f_e > 0     =>  C^p_e = min(C^p_e, 0)
+    2. f_e < U_e   =>  max(-C^p_e, 0) = 0
+    が必要十分. すなわち,
+    1. f_e > 0    =>  C^p_e <= 0
+    2. f_e < U_e  =>  C^p_e >= 0
+    である.
+    これは, mcf の相補性の最適性条件.
+
+
+
+
+辺を最初に容量でソートしておいたら速くなったりしないかなぁ
+scaling した out of kilter とかどうなんでしょう
+scaling というか successive approximation 的な balancing alorithm は?
+min cost circulation を単に push/relabel のコストを変えただけのにしちゃダメ?
+
+
+Finding Minimum Cost Circulations by Successive Approximation
+appendix に push/relabel の FIFO の最悪ケース (O(n^3)) が載ってる. というわけでもないっぽい?
+
+これ面白そう
+http://wwwpub.utdallas.edu/~chandra/documents/networks/net4.pdf
+
+// Goldberg/Trajan が書いた MaxFlow の啓蒙的なやつ. 参考文献がいっぱいあって良い.
+// [19] と [31] が特に読みたい.
+https://courses.cs.ut.ee/MTAT.03.238/2014_fall/uploads/Main/maxflow.pdf
+
+
+LEMON の cost scaling, bucket size が alpha n くらいで, (alpha + 1) n くらい必要じゃないのはなんでなの?
+あと, push look-ahead, 計算量遅くなってない??
+
+
+edge を fix するやつ, どいうのだっけ.
+開始時の alpha eps - optimal circulation で,
+| c_p(v, w) | >= n (alpha eps + eps) = n (alpha + 1) eps
+ならば, どんな eps-optimal circulation も f(v, w) が今のまま.
+> なんか上手いことやって固定される edge を増やせないかなぁ.
+
+
+Minimum Cost Assignment
+https://github.com/spaghetti-source/algorithm/blob/master/math/assignment.cc
+//   R. Jonker and A. Volgenant (1987):
+//   A shortest augmenting path algorithm for dense and sparse linear assignment problems.
+//   Computing, vol.38, no.4, pp.325-340.
+
+goldberg の library
+http://www.avglab.com/andrew/soft.html
+
+Push/Relabel
+http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.91.1599
+
+- goldberg の 2-level p/r algo 2009 らしい
+  - http://www.cs.tau.ac.il/~sagihed/dsw10a/goldberg2.pdf
+
+実験してみた
+
+- http://snap.stanford.edu/class/cs224w-2013/projects2013/cs224w-070-final.pdf
+
+  - 参考文献に色々のってそう.
+  - commercial software って何使ってるんじゃ
+
+- min cost flow
+
+  - http://arxiv.org/pdf/1207.6381.pdf
+  - やっぱり network simplex と cost scaling (partial augment-relabel ver) がいいのかなぁ.
+
+- goldberg の scaling
+  - http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.31.258&rep=rep1&type=pdf
+
+- lemon
+  - mf : http://lemon.cs.elte.hu/pub/doc/1.2.4/a00533.html
+  - mcf: http://lemon.cs.elte.hu/pub/doc/1.2.4/a00534.html
+    NS : 数千ノードまでの密グラフで速い
+    COS: 十万ノードとか出てくると, 特に疎で速い.
+    CAS: total supply and/or capacities が小さいとかなら, 速い.
+
+    CAS の arc cost だけ real を扱えるらしい.
+
+
+
+
