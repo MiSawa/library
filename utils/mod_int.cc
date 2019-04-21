@@ -12,14 +12,13 @@ struct ModInt{//{{{
     ModInt(Exact, const int v) : val(v) {}
 
     ModInt inv() const {//{{{
-        int a = val;
-        int b = mod, x = 1, u = 0;
+        int a = val, b = mod, x = 1, u = 0;
         while(b){
             int t = a / b;
             std::swap(a -= t * b, b);
             std::swap(x -= t * u, u);
         }
-        return ModInt(exact, a >= 0 ? x : -x);
+        return ModInt(exact, x < 0 ? x+mod : x);
     }//}}}
 
     ModInt operator+() const { return *this; }
@@ -77,6 +76,10 @@ signed main(){
     mi c = 3 + b;
 
     cout << (++a).val << endl;
+    // for (int i = 1; i < 97; ++i) {
+    //     mi a = i;
+    //     cout << (a.inv() * a).val << endl;
+    // }
     return 0;
 }
 #endif
