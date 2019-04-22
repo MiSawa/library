@@ -2,6 +2,7 @@
 #include <type_traits>
 #include <tuple>
 
+// You should probably use mod_int2.cc
 template<int mod>
 struct ModInt{//{{{
     struct Exact {} constexpr static exact{};
